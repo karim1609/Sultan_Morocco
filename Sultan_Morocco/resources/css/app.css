@@ -1,0 +1,332 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
+
+@theme {
+    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+        'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-headline: 'Noto Serif', ui-serif, Georgia, 'Times New Roman', serif;
+    --font-body: 'Inter', ui-sans-serif, system-ui, sans-serif;
+
+    /* Sultan heritage palette (Material-style) */
+    --color-background: #fcf9f4;
+    --color-on-background: #1c1c19;
+    --color-surface: #fcf9f4;
+    --color-surface-dim: #dcdad5;
+    --color-surface-bright: #fcf9f4;
+    --color-surface-container: #f0ede9;
+    --color-surface-container-low: #f6f3ee;
+    --color-surface-container-high: #ebe8e3;
+    --color-surface-container-highest: #e5e2dd;
+    --color-surface-container-lowest: #ffffff;
+    --color-on-surface: #1c1c19;
+    --color-on-surface-variant: #414944;
+    --color-surface-variant: #e5e2dd;
+    --color-outline: #717974;
+    --color-outline-variant: #c0c8c3;
+    --color-primary: #00261a;
+    --color-on-primary: #ffffff;
+    --color-primary-container: #0f3d2e;
+    --color-on-primary-container: #7ba894;
+    --color-primary-fixed: #beedd7;
+    --color-primary-fixed-dim: #a2d1bb;
+    --color-on-primary-fixed: #002116;
+    --color-on-primary-fixed-variant: #234f3f;
+    --color-inverse-primary: #a2d1bb;
+    --color-secondary: #785a06;
+    --color-on-secondary: #ffffff;
+    --color-secondary-container: #ffd57a;
+    --color-on-secondary-container: #795a06;
+    --color-secondary-fixed: #ffdf9e;
+    --color-secondary-fixed-dim: #eac169;
+    --color-on-secondary-fixed: #261a00;
+    --color-on-secondary-fixed-variant: #5b4300;
+    --color-tertiary: #410f00;
+    --color-on-tertiary: #ffffff;
+    --color-tertiary-container: #651d00;
+    --color-on-tertiary-container: #eb825c;
+    --color-tertiary-fixed: #ffdbcf;
+    --color-tertiary-fixed-dim: #ffb59c;
+    --color-on-tertiary-fixed: #390c00;
+    --color-on-tertiary-fixed-variant: #7c2d0e;
+    --color-error: #ba1a1a;
+    --color-on-error: #ffffff;
+    --color-error-container: #ffdad6;
+    --color-on-error-container: #93000a;
+    --color-inverse-surface: #31302d;
+    --color-inverse-on-surface: #f3f0eb;
+    --color-surface-tint: #3b6756;
+}
+
+@layer base {
+    html {
+        scroll-behavior: smooth;
+    }
+    body {
+        @apply min-h-screen antialiased;
+    }
+}
+
+@layer utilities {
+    .ultra-bg {
+        @apply relative overflow-hidden bg-zinc-950;
+    }
+
+    .ultra-bg::before {
+        content: "";
+        @apply pointer-events-none absolute inset-0 opacity-60;
+        background:
+            radial-gradient(900px circle at 18% 22%, color-mix(in oklab, rgb(34 211 238) 20%, transparent) 0%, transparent 55%),
+            radial-gradient(850px circle at 82% 16%, color-mix(in oklab, rgb(168 85 247) 22%, transparent) 0%, transparent 52%),
+            radial-gradient(950px circle at 65% 85%, color-mix(in oklab, rgb(16 185 129) 18%, transparent) 0%, transparent 60%);
+        filter: blur(10px) saturate(1.1);
+        transform: translate3d(0, 0, 0);
+    }
+
+    .ultra-bg::after {
+        content: "";
+        @apply pointer-events-none absolute inset-0 opacity-[0.12];
+        background-image:
+            linear-gradient(to right, rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+        background-size: 48px 48px;
+        mask-image: radial-gradient(circle at 50% 20%, black 0%, transparent 62%);
+    }
+
+    .noise {
+        @apply relative;
+    }
+    .noise::before {
+        content: "";
+        @apply pointer-events-none absolute inset-0 opacity-[0.08] mix-blend-overlay;
+        background-image:
+            url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='.45'/%3E%3C/svg%3E");
+    }
+
+    .glass {
+        @apply border border-white/10 bg-white/5 backdrop-blur-xl;
+        box-shadow:
+            0 20px 60px rgba(0, 0, 0, 0.45),
+            inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    }
+
+    .card {
+        @apply rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl;
+        box-shadow:
+            0 20px 60px rgba(0, 0, 0, 0.45),
+            inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    }
+
+    .btn {
+        @apply inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold transition;
+        @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/60 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950;
+        @apply disabled:opacity-60 disabled:cursor-not-allowed;
+    }
+    .btn-primary {
+        @apply inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold transition;
+        @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/60 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950;
+        @apply disabled:opacity-60 disabled:cursor-not-allowed;
+        @apply bg-gradient-to-r from-cyan-400 via-emerald-400 to-violet-400 text-zinc-950;
+        @apply hover:brightness-110 active:brightness-95;
+        box-shadow: 0 10px 30px rgba(34, 211, 238, 0.18);
+    }
+    .btn-ghost {
+        @apply inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold transition;
+        @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/60 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950;
+        @apply disabled:opacity-60 disabled:cursor-not-allowed;
+        @apply border border-white/10 bg-white/5 text-zinc-100 hover:bg-white/10;
+    }
+
+    .input {
+        @apply w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-zinc-100;
+        @apply placeholder:text-zinc-400;
+        @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/60;
+        @apply transition;
+    }
+
+    .label {
+        @apply block text-xs font-semibold uppercase tracking-wider text-zinc-300;
+    }
+
+    .table-ultra {
+        @apply w-full overflow-hidden rounded-2xl border border-white/10;
+    }
+    .table-ultra table {
+        @apply w-full border-collapse bg-white/5;
+    }
+    .table-ultra th {
+        @apply bg-white/5 px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-zinc-200;
+    }
+    .table-ultra td {
+        @apply px-4 py-3 text-sm text-zinc-100;
+    }
+    .table-ultra tr {
+        @apply border-t border-white/10;
+    }
+
+    @keyframes float-soft {
+        0%,
+        100% {
+            transform: translateY(0);
+        }
+        50% {
+            transform: translateY(-10px);
+        }
+    }
+    .animate-float-soft {
+        animation: float-soft 9s ease-in-out infinite;
+    }
+
+    @keyframes aurora-drift {
+        0%,
+        100% {
+            transform: translate(0, 0) scale(1);
+            opacity: 0.55;
+        }
+        33% {
+            transform: translate(4%, -3%) scale(1.05);
+            opacity: 0.75;
+        }
+        66% {
+            transform: translate(-3%, 4%) scale(0.98);
+            opacity: 0.65;
+        }
+    }
+
+    @keyframes shimmer-slide {
+        0% {
+            background-position: 200% center;
+        }
+        100% {
+            background-position: -200% center;
+        }
+    }
+
+    @keyframes welcome-in {
+        from {
+            opacity: 0;
+            transform: translateY(24px) scale(0.98);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    }
+
+    @keyframes ring-pulse {
+        0%,
+        100% {
+            box-shadow: 0 0 0 0 rgba(34, 211, 238, 0.35);
+        }
+        50% {
+            box-shadow: 0 0 0 16px rgba(34, 211, 238, 0);
+        }
+    }
+
+    @keyframes sparkle-float {
+        0%,
+        100% {
+            transform: translateY(0) rotate(0deg);
+            opacity: 0.4;
+        }
+        50% {
+            transform: translateY(-12px) rotate(12deg);
+            opacity: 1;
+        }
+    }
+
+    .welcome-orb {
+        @apply pointer-events-none absolute rounded-full blur-3xl;
+        animation: aurora-drift 18s ease-in-out infinite;
+    }
+
+    .welcome-shimmer {
+        background: linear-gradient(
+            110deg,
+            rgba(255, 255, 255, 0.15) 0%,
+            rgba(255, 255, 255, 0.85) 45%,
+            rgba(34, 211, 238, 0.9) 55%,
+            rgba(167, 139, 250, 0.95) 65%,
+            rgba(255, 255, 255, 0.15) 100%
+        );
+        background-size: 220% auto;
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        animation: shimmer-slide 4.5s linear infinite;
+    }
+
+    .welcome-stagger > * {
+        opacity: 0;
+        animation: welcome-in 0.85s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+    .welcome-stagger > *:nth-child(1) {
+        animation-delay: 0.05s;
+    }
+    .welcome-stagger > *:nth-child(2) {
+        animation-delay: 0.12s;
+    }
+    .welcome-stagger > *:nth-child(3) {
+        animation-delay: 0.19s;
+    }
+    .welcome-stagger > *:nth-child(4) {
+        animation-delay: 0.26s;
+    }
+    .welcome-stagger > *:nth-child(5) {
+        animation-delay: 0.33s;
+    }
+    .welcome-stagger > *:nth-child(6) {
+        animation-delay: 0.4s;
+    }
+
+    .welcome-avatar-ring {
+        animation: ring-pulse 2.8s ease-in-out infinite;
+    }
+
+    .welcome-sparkle {
+        animation: sparkle-float 3.2s ease-in-out infinite;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .welcome-orb,
+        .welcome-shimmer,
+        .welcome-stagger > *,
+        .welcome-avatar-ring,
+        .welcome-sparkle,
+        .animate-float-soft {
+            animation: none !important;
+        }
+        .welcome-stagger > * {
+            opacity: 1;
+            transform: none;
+        }
+    }
+
+    .material-symbols-outlined {
+        font-family: 'Material Symbols Outlined', sans-serif;
+        font-weight: 300;
+        font-style: normal;
+        font-size: 24px;
+        line-height: 1;
+        letter-spacing: normal;
+        text-transform: none;
+        display: inline-block;
+        white-space: nowrap;
+        word-wrap: normal;
+        direction: ltr;
+        font-feature-settings: 'liga';
+        -webkit-font-smoothing: antialiased;
+        font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+    }
+
+    .no-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+    .no-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+}
