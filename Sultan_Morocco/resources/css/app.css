@@ -1,5 +1,8 @@
 @import 'tailwindcss';
 
+/* Manual dark mode: class + data-theme on <html> (both wired in theme-init / theme.js) */
+@custom-variant dark (&:where(.dark, .dark *, [data-theme='dark'], [data-theme='dark'] *));
+
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 @source '../**/*.blade.php';
@@ -296,11 +299,22 @@
         .welcome-stagger > *,
         .welcome-avatar-ring,
         .welcome-sparkle,
-        .animate-float-soft {
+        .animate-float-soft,
+        .profile-ambient-1,
+        .profile-ambient-2,
+        .profile-ambient-3,
+        .profile-hero-in,
+        .profile-stagger > *,
+        .profile-avatar-spin,
+        .profile-avatar-glow {
             animation: none !important;
         }
-        .welcome-stagger > * {
+        .welcome-stagger > *,
+        .profile-stagger > * {
             opacity: 1;
+            transform: none;
+        }
+        .profile-card:hover {
             transform: none;
         }
     }
@@ -328,5 +342,265 @@
     .no-scrollbar {
         -ms-overflow-style: none;
         scrollbar-width: none;
+    }
+
+    @keyframes profile-rise {
+        from {
+            opacity: 0;
+            transform: translateY(32px) scale(0.96);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    }
+
+    @keyframes profile-float-slow {
+        0%,
+        100% {
+            transform: translate(0, 0) scale(1);
+        }
+        33% {
+            transform: translate(12px, -16px) scale(1.06);
+        }
+        66% {
+            transform: translate(-14px, 10px) scale(0.96);
+        }
+    }
+
+    @keyframes profile-spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    @keyframes profile-pulse-glow {
+        0%,
+        100% {
+            opacity: 0.45;
+            transform: scale(1);
+        }
+        50% {
+            opacity: 0.85;
+            transform: scale(1.04);
+        }
+    }
+
+    .profile-ambient-1 {
+        animation: profile-float-slow 16s ease-in-out infinite;
+    }
+
+    .profile-ambient-2 {
+        animation: profile-float-slow 20s ease-in-out infinite reverse;
+    }
+
+    .profile-ambient-3 {
+        animation: profile-float-slow 22s ease-in-out infinite;
+        animation-delay: -6s;
+    }
+
+    .profile-hero-in {
+        animation: profile-rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+
+    .profile-stagger > * {
+        opacity: 0;
+        animation: profile-rise 0.72s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+
+    .profile-stagger > *:nth-child(1) {
+        animation-delay: 0.08s;
+    }
+    .profile-stagger > *:nth-child(2) {
+        animation-delay: 0.16s;
+    }
+    .profile-stagger > *:nth-child(3) {
+        animation-delay: 0.24s;
+    }
+    .profile-stagger > *:nth-child(4) {
+        animation-delay: 0.32s;
+    }
+    .profile-stagger > *:nth-child(5) {
+        animation-delay: 0.4s;
+    }
+
+    .profile-avatar-spin {
+        animation: profile-spin 10s linear infinite;
+    }
+
+    .profile-avatar-glow {
+        animation: profile-pulse-glow 3.2s ease-in-out infinite;
+    }
+
+    .profile-card {
+        @apply transition duration-300 ease-out;
+    }
+
+    .profile-card:hover {
+        transform: translateY(-4px) scale(1.01);
+    }
+
+    /* —— Master navbar (layout shell + motion) —— */
+    @keyframes nav-master-enter {
+        from {
+            opacity: 0;
+            transform: translateY(-14px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes nav-shimmer-border {
+        0% {
+            background-position: 0% 50%;
+        }
+        100% {
+            background-position: 200% 50%;
+        }
+    }
+
+    @keyframes nav-brand-pulse {
+        0%,
+        100% {
+            box-shadow:
+                0 0 0 1px color-mix(in oklab, rgb(34 211 238) 35%, transparent),
+                0 0 24px color-mix(in oklab, rgb(34 211 238) 15%, transparent);
+        }
+        50% {
+            box-shadow:
+                0 0 0 1px color-mix(in oklab, rgb(167 139 250) 45%, transparent),
+                0 0 32px color-mix(in oklab, rgb(16 185 129) 18%, transparent);
+        }
+    }
+
+    @keyframes nav-link-underline {
+        from {
+            transform: scaleX(0);
+        }
+        to {
+            transform: scaleX(1);
+        }
+    }
+
+    .nav-master {
+        @apply relative isolate;
+        animation: nav-master-enter 0.65s cubic-bezier(0.22, 1, 0.36, 1) both;
+        transition:
+            padding 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+            box-shadow 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+            background-color 0.35s ease,
+            border-color 0.35s ease;
+    }
+
+    .nav-master::after {
+        content: "";
+        @apply pointer-events-none absolute inset-x-0 bottom-0 z-10 h-px;
+        background: linear-gradient(
+            90deg,
+            transparent,
+            color-mix(in oklab, rgb(34 211 238) 55%, transparent),
+            color-mix(in oklab, rgb(16 185 129) 50%, transparent),
+            color-mix(in oklab, rgb(167 139 250) 55%, transparent),
+            transparent
+        );
+        background-size: 200% 100%;
+        animation: nav-shimmer-border 10s linear infinite;
+        opacity: 0.65;
+    }
+
+    .nav-master--chat::after {
+        opacity: 0.85;
+    }
+
+    .nav-master__inner {
+        transition:
+            padding 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+            gap 0.35s ease;
+    }
+
+    .nav-master--scrolled .nav-master__inner {
+        @apply py-2 sm:py-2.5;
+    }
+
+    .nav-master--scrolled.nav-master--default {
+        @apply shadow-md shadow-stone-200/30 dark:shadow-black/40;
+    }
+
+    .nav-master--scrolled.nav-master--chat {
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+    }
+
+    .nav-master__brand-mark {
+        animation: nav-brand-pulse 4s ease-in-out infinite;
+    }
+
+    .nav-master__link {
+        @apply relative inline-flex items-center rounded-xl px-3 py-2 text-sm font-semibold tracking-tight transition duration-300 ease-out;
+    }
+
+    .nav-master__link::after {
+        content: "";
+        @apply pointer-events-none absolute bottom-0 left-3 right-3 h-0.5 origin-left scale-x-0 rounded-full bg-gradient-to-r from-cyan-400 via-emerald-400 to-violet-400 transition duration-300 ease-out;
+    }
+
+    .nav-master__link:hover::after {
+        transform: scaleX(1);
+    }
+
+    .nav-master__link--active::after {
+        transform: scaleX(1);
+    }
+
+    .nav-master__link--chat::after {
+        @apply from-emerald-400 via-cyan-400 to-violet-400;
+    }
+
+    .nav-master__burger-line {
+        @apply block h-0.5 rounded-full transition duration-300 ease-out;
+        transition-property: transform, opacity, margin, background-color;
+    }
+
+    .nav-master__burger[aria-expanded="true"] .nav-master__burger-line:nth-child(1) {
+        @apply translate-y-[7px] rotate-45;
+    }
+
+    .nav-master__burger[aria-expanded="true"] .nav-master__burger-line:nth-child(2) {
+        @apply opacity-0;
+    }
+
+    .nav-master__burger[aria-expanded="true"] .nav-master__burger-line:nth-child(3) {
+        @apply -translate-y-[7px] -rotate-45;
+    }
+
+    .nav-master__panel {
+        transition:
+            max-height 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+            opacity 0.35s ease,
+            transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .nav-master__panel[data-open="false"] {
+        @apply pointer-events-none max-h-0 -translate-y-2 border-transparent opacity-0;
+    }
+
+    .nav-master__panel[data-open="true"] {
+        @apply pointer-events-auto max-h-[min(75vh,520px)] translate-y-0 opacity-100;
+    }
+
+    .nav-master__panel-link {
+        @apply flex items-center rounded-2xl px-4 py-3.5 text-base font-semibold transition duration-200 ease-out;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .nav-master,
+        .nav-master::after,
+        .nav-master__brand-mark,
+        .nav-master__link::after,
+        .nav-master__panel {
+            animation: none !important;
+            transition-duration: 0.01ms !important;
+        }
     }
 }

@@ -4,10 +4,41 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Sultan Morocco</title>
+    <x-theme-init />
     @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     @else
         <script src="https://cdn.tailwindcss.com"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                function sync(btn) {
+                    var dark = document.documentElement.classList.contains('dark');
+                    btn.querySelectorAll('[data-theme-icon="sun"]').forEach(function (el) {
+                        el.classList.toggle('hidden', !dark);
+                    });
+                    btn.querySelectorAll('[data-theme-icon="moon"]').forEach(function (el) {
+                        el.classList.toggle('hidden', dark);
+                    });
+                }
+                document.querySelectorAll('[data-theme-toggle]').forEach(function (btn) {
+                    sync(btn);
+                    btn.addEventListener('click', function () {
+                        var d = document.documentElement;
+                        if (d.classList.contains('dark')) {
+                            d.classList.remove('dark');
+                            localStorage.setItem('sultan-theme', 'light');
+                            d.setAttribute('data-theme', 'light');
+                        } else {
+                            d.classList.add('dark');
+                            localStorage.setItem('sultan-theme', 'dark');
+                            d.setAttribute('data-theme', 'dark');
+                        }
+                        d.style.colorScheme = d.classList.contains('dark') ? 'dark' : 'light';
+                        document.querySelectorAll('[data-theme-toggle]').forEach(sync);
+                    });
+                });
+            });
+        </script>
     @endif
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -52,9 +83,39 @@
         input:focus {
             box-shadow: 0 0 0 4px rgba(33, 160, 93, 0.15);
         }
+
+        html.dark body {
+            background-color: #0c0b0a !important;
+            color: #f4f1eb;
+        }
+        html.dark .bg-custom-gray {
+            background-color: #0c0b0a !important;
+        }
+        html.dark main {
+            background: #171512 !important;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+        }
+        html.dark .bg-input {
+            background-color: #252320 !important;
+            color: #f4f1eb;
+        }
+        html.dark .bg-input:hover {
+            background-color: #2f2c27 !important;
+        }
+        html.dark .text-green-dark {
+            color: #6ee7b7 !important;
+        }
+        html.dark .bg-decorative {
+            fill: #2a2620;
+            opacity: 0.35;
+        }
     </style>
 </head>
-<body class="bg-custom-gray text-[#1B1B18] min-h-screen flex flex-col justify-center items-center relative overflow-hidden">
+<body class="bg-custom-gray text-[#1B1B18] min-h-screen flex flex-col justify-center items-center relative overflow-hidden transition-colors duration-200">
+    <div class="fixed right-4 top-4 z-50">
+        <x-theme-toggle class="!border-white/15 !bg-zinc-900/80 !text-amber-200 hover:!bg-zinc-800" />
+    </div>
     <!-- Decorative Background Shapes (Silhouettes) -->
     <svg class="absolute top-10 left-[-5%] w-96 h-96 opacity-60 z-0 bg-decorative pointer-events-none animate-float" viewBox="0 0 100 100" preserveAspectRatio="none">
         <!-- Simplified Mosque/Dome silhouette -->

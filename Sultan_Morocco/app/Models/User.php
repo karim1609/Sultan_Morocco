@@ -3,9 +3,10 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class User extends Authenticatable
 {
@@ -48,9 +49,14 @@ class User extends Authenticatable
         return $this->hasMany(Itinerary::class);
     }
 
-    public function chatMessages(): HasMany
+    public function conversations(): BelongsToMany
     {
-        return $this->hasMany(ChatMessage::class);
+        return $this->belongsToMany(Conversation::class, 'conversation_user');
+    }
+
+    public function sentMessages(): HasMany
+    {
+        return $this->hasMany(Message::class, 'sender_id');
     }
 
     public function notifications(): HasMany

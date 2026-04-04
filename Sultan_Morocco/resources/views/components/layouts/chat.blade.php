@@ -1,3 +1,7 @@
+@props([
+    'title' => null,
+])
+
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     <head>
@@ -12,15 +16,13 @@
 
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="min-h-screen bg-background text-on-background antialiased transition-colors duration-200 dark:ultra-bg dark:text-zinc-100 dark:noise">
-        <div class="fixed right-4 top-4 z-50 sm:right-6 sm:top-6">
-            <x-theme-toggle />
-        </div>
-        <div class="relative min-h-screen">
-            <main class="mx-auto flex min-h-screen w-full max-w-6xl items-center justify-center px-4 py-10 sm:px-6">
-                <div class="w-full max-w-md">
-                    {{ $slot }}
-                </div>
+    <body class="min-h-screen bg-zinc-950 text-zinc-100 antialiased">
+        <div class="relative flex min-h-screen flex-col">
+            <x-navbar variant="chat" />
+
+            <main class="mx-auto flex w-full max-w-6xl flex-1 flex-col px-4 py-6 sm:px-6">
+                <x-alert />
+                {{ $slot }}
             </main>
         </div>
     </body>

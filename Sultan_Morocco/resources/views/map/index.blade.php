@@ -4,6 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Hotel Map — Sultan Morocco</title>
+    <x-theme-init />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -516,50 +517,112 @@
             100% { transform: scale(1) translateY(0); opacity: 1; }
         }
         .pm { animation: marker-pop 0.4s cubic-bezier(0.22,1,0.36,1) both; }
+
+        /* Dark mode (class on html) */
+        html.dark #panel {
+            background: #1c1b18;
+            border-color: rgba(255,255,255,0.08);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.45);
+        }
+        html.dark .panel-body { background: transparent; }
+        html.dark .search-wrap,
+        html.dark .sort-wrap {
+            background: #2a2824;
+            border-color: rgba(255,255,255,0.12);
+        }
+        html.dark .search-wrap input,
+        html.dark .sort-wrap select { color: #f4f1eb; }
+        html.dark .search-wrap input::placeholder { color: #8a8580; }
+        html.dark .hotel-row:hover { background: #2f2d28; }
+        html.dark .hotel-row.active { background: #35322c; border-color: #5eead4; }
+        html.dark .hotel-row-name { color: #f4f1eb; }
+        html.dark .hotel-row-loc { color: #a8a29e; }
+        html.dark .hotel-row-price { color: #6ee7b7; }
+        html.dark .page-info { color: #a8a29e; }
+        html.dark #legend {
+            background: #1c1b18;
+            border-color: rgba(255,255,255,0.1);
+        }
+        html.dark .legend-title { color: #a8a29e; }
+        html.dark .legend-item { color: #e7e5e4; }
+        html.dark #loading-overlay {
+            background: rgba(28, 27, 24, 0.92);
+        }
+        html.dark .loader-text { color: #a8a29e; }
+        html.dark .loader-ring {
+            border-color: #3f3e3a;
+            border-top-color: #34d399;
+        }
+        html.dark .leaflet-popup-content-wrapper {
+            background: #1c1b18 !important;
+            border-color: rgba(255,255,255,0.12) !important;
+        }
+        html.dark .leaflet-popup-tip { background: #1c1b18 !important; }
+        html.dark .popup-name { color: #f4f1eb; }
+        html.dark .popup-rating-label { color: #d6d3d1; }
+        html.dark .popup-loc { color: #a8a29e; }
+        html.dark .popup-addr { color: #78716c; }
+        html.dark .popup-price { color: #f4f1eb; }
+        html.dark .popup-btn-outline {
+            background: #2a2824 !important;
+            border-color: rgba(255,255,255,0.15) !important;
+            color: #6ee7b7 !important;
+        }
+        html.dark .leaflet-control-zoom-in,
+        html.dark .leaflet-control-zoom-out {
+            color: #e7e5e4 !important;
+            background: #2a2824 !important;
+        }
+        html.dark .leaflet-control-zoom-in:hover,
+        html.dark .leaflet-control-zoom-out:hover {
+            background: #3f3e3a !important;
+            color: #6ee7b7 !important;
+        }
     </style>
 </head>
-<body class="font-body">
+<body class="font-body bg-background text-on-background transition-colors dark:bg-zinc-950 dark:text-zinc-100">
 
 {{-- ═══════════════════════════ TOP NAV ════════════════════════════════ --}}
-<nav class="fixed top-0 z-[2000] w-full bg-surface/90 backdrop-blur-md border-b border-outline-variant/20" style="height:64px;">
+<nav class="fixed top-0 z-[2000] w-full border-b border-outline-variant/20 bg-surface/90 backdrop-blur-md dark:border-white/10 dark:bg-zinc-950/90" style="height:64px;">
     <div class="mx-auto flex w-full max-w-7xl items-center justify-between px-6 py-4 md:px-8">
 
-        <a href="{{ url('/') }}" class="font-headline text-2xl font-bold text-emerald-900">Sultan</a>
+        <a href="{{ url('/') }}" class="font-headline text-2xl font-bold text-emerald-900 dark:text-emerald-400">Sultan</a>
 
         <div class="hidden items-center gap-8 md:flex">
-            <a class="font-body text-sm font-medium uppercase tracking-wider text-stone-600 transition-colors hover:text-emerald-700"
+            <a class="font-body text-sm font-medium uppercase tracking-wider text-stone-600 transition-colors hover:text-emerald-700 dark:text-stone-400 dark:hover:text-emerald-300"
                href="{{ url('/') }}">Home</a>
-            <a class="font-body text-sm font-medium uppercase tracking-wider text-stone-600 transition-colors hover:text-emerald-700"
+            <a class="font-body text-sm font-medium uppercase tracking-wider text-stone-600 transition-colors hover:text-emerald-700 dark:text-stone-400 dark:hover:text-emerald-300"
                href="{{ url('/') }}#destinations">Explore</a>
-            <a class="border-b-2 border-amber-500 pb-1 font-body text-sm font-medium uppercase tracking-wider text-emerald-900"
+            <a class="border-b-2 border-amber-500 pb-1 font-body text-sm font-medium uppercase tracking-wider text-emerald-900 dark:text-emerald-400"
                href="{{ route('map.index') }}">Map</a>
-            <a class="font-body text-sm font-medium uppercase tracking-wider text-stone-600 transition-colors hover:text-emerald-700"
+            <a class="font-body text-sm font-medium uppercase tracking-wider text-stone-600 transition-colors hover:text-emerald-700 dark:text-stone-400 dark:hover:text-emerald-300"
                href="{{ url('/') }}#categories">Restaurants</a>
-            <a class="font-body text-sm font-medium uppercase tracking-wider text-stone-600 transition-colors hover:text-emerald-700"
+            <a class="font-body text-sm font-medium uppercase tracking-wider text-stone-600 transition-colors hover:text-emerald-700 dark:text-stone-400 dark:hover:text-emerald-300"
                href="{{ route('hotels.index') }}">Hotels</a>
-            <a class="font-body text-sm font-medium uppercase tracking-wider text-stone-600 transition-colors hover:text-emerald-700"
+            <a class="font-body text-sm font-medium uppercase tracking-wider text-stone-600 transition-colors hover:text-emerald-700 dark:text-stone-400 dark:hover:text-emerald-300"
                href="{{ url('/') }}#experiences">Experiences</a>
         </div>
 
         <div class="flex items-center gap-2 md:gap-4">
+            <x-theme-toggle class="!border-outline-variant/40 !bg-surface-container-lowest/90 !text-amber-800 hover:!bg-surface-container-high dark:!border-white/15 dark:!bg-white/10 dark:!text-amber-200 dark:hover:!bg-white/15" />
             @auth
-                <span class="hidden max-w-[10rem] truncate text-xs font-medium text-stone-600 sm:inline">
+                <span class="hidden max-w-[10rem] truncate text-xs font-medium text-stone-600 sm:inline dark:text-stone-400">
                     Hi, {{ Auth::user()->name }}
                 </span>
                 <a href="{{ route('profile', Auth::id()) }}"
-                   class="hidden rounded-full border border-outline-variant/40 px-3 py-1.5 font-body text-xs font-semibold uppercase tracking-wider text-primary transition hover:bg-surface-container-high sm:inline">
+                   class="hidden rounded-full border border-outline-variant/40 px-3 py-1.5 font-body text-xs font-semibold uppercase tracking-wider text-primary transition hover:bg-surface-container-high sm:inline dark:hover:bg-white/10">
                     Profile
                 </a>
                 <form method="POST" action="{{ route('logout') }}" class="inline">
                     @csrf
                     <button type="submit"
-                            class="rounded-full border border-outline-variant/40 px-3 py-1.5 font-body text-xs font-semibold uppercase tracking-wider text-stone-600 transition hover:bg-surface-container-high">
+                            class="rounded-full border border-outline-variant/40 px-3 py-1.5 font-body text-xs font-semibold uppercase tracking-wider text-stone-600 transition hover:bg-surface-container-high dark:text-stone-400 dark:hover:bg-white/10">
                         Log out
                     </button>
                 </form>
             @else
                 <a href="{{ route('login') }}"
-                   class="rounded-full border border-outline-variant/40 px-3 py-1.5 font-body text-xs font-semibold uppercase tracking-wider text-primary transition hover:bg-surface-container-high">
+                   class="rounded-full border border-outline-variant/40 px-3 py-1.5 font-body text-xs font-semibold uppercase tracking-wider text-primary transition hover:bg-surface-container-high dark:hover:bg-white/10">
                     Log in
                 </a>
                 <a href="{{ route('signup') }}"
@@ -568,8 +631,8 @@
                 </a>
             @endauth
             <a href="{{ auth()->check() ? route('profile', auth()->id()) : route('login') }}"
-               class="rounded-full p-2 transition-colors hover:bg-surface-container-high">
-                <span class="material-symbols-outlined text-emerald-900">account_circle</span>
+               class="rounded-full p-2 transition-colors hover:bg-surface-container-high dark:hover:bg-white/10">
+                <span class="material-symbols-outlined text-emerald-900 dark:text-emerald-400">account_circle</span>
             </a>
         </div>
     </div>
@@ -775,12 +838,31 @@ var map = L.map('map', {
     attributionControl: true
 });
 
-/* CartoDB Voyager tiles — clean, close to Google Maps look */
-L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+/* CartoDB tiles — light / dark */
+var lightTiles = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>',
     subdomains:  'abcd',
     maxZoom:     20
-}).addTo(map);
+});
+var darkTiles = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>',
+    subdomains:  'abcd',
+    maxZoom:     20
+});
+var activeBase = document.documentElement.classList.contains('dark') ? darkTiles : lightTiles;
+activeBase.addTo(map);
+
+function syncMapBasemap() {
+    var useDark = document.documentElement.classList.contains('dark');
+    if (useDark) {
+        if (map.hasLayer(lightTiles)) map.removeLayer(lightTiles);
+        if (!map.hasLayer(darkTiles)) darkTiles.addTo(map);
+    } else {
+        if (map.hasLayer(darkTiles)) map.removeLayer(darkTiles);
+        if (!map.hasLayer(lightTiles)) lightTiles.addTo(map);
+    }
+}
+window.addEventListener('sultan-theme-change', syncMapBasemap);
 
 /* Move zoom control to bottom-right */
 map.zoomControl.setPosition('bottomright');

@@ -4,6 +4,7 @@
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <title>Sultan | Modern Moroccan Heritage</title>
+        <x-theme-init />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
         <link
@@ -68,6 +69,11 @@
                             Hi, {{ Auth::user()->name }}
                         </span>
                         <a
+                            href="{{ route('messages.index') }}"
+                            class="hidden rounded-full border border-outline-variant/40 px-3 py-1.5 font-body text-xs font-semibold uppercase tracking-wider text-primary transition hover:bg-surface-container-high sm:inline"
+                            >Messages</a
+                        >
+                        <a
                             href="{{ route('profile', Auth::id()) }}"
                             class="hidden rounded-full border border-outline-variant/40 px-3 py-1.5 font-body text-xs font-semibold uppercase tracking-wider text-primary transition hover:bg-surface-container-high sm:inline"
                             >Profile</a
@@ -93,6 +99,7 @@
                             >Sign up</a
                         >
                     @endauth
+                    <x-theme-toggle class="!border-outline-variant/50 !bg-surface-container-lowest/90 !text-amber-800 hover:!bg-surface-container-high dark:!border-white/15 dark:!bg-white/10 dark:!text-amber-200 dark:hover:!bg-white/15" />
                     <button type="button" class="rounded-full p-2 transition-colors hover:bg-surface-container-high" aria-label="Search">
                         <span class="material-symbols-outlined text-emerald-900 dark:text-emerald-400">search</span>
                     </button>

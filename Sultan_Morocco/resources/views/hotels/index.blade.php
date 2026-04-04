@@ -1,815 +1,1745 @@
 <!DOCTYPE html>
 <html class="scroll-smooth" lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Hotels in Morocco — Sultan</title>
+    <x-theme-init />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,300,0,0" rel="stylesheet" />
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     <style>
-        /* ── Custom keyframes ─────────────────────────────── */
-        @keyframes sk-shimmer {
-            0%   { background-position: 200% 0; }
-            100% { background-position: -200% 0; }
-        }
-        @keyframes card-rise {
-            from { opacity: 0; transform: translateY(28px) scale(0.97); }
-            to   { opacity: 1; transform: translateY(0)    scale(1);    }
-        }
-        @keyframes fade-in {
-            from { opacity: 0; }
-            to   { opacity: 1; }
-        }
-        @keyframes hero-up {
-            from { opacity: 0; transform: translateY(40px); }
-            to   { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes heart-pop {
-            0%   { transform: scale(1);   }
-            30%  { transform: scale(1.45); }
-            60%  { transform: scale(0.9); }
-            100% { transform: scale(1);   }
-        }
-        @keyframes pill-in {
-            from { opacity: 0; transform: translateX(-10px); }
-            to   { opacity: 1; transform: translateX(0); }
-        }
-        @keyframes count-fade {
-            0%   { opacity: 0; transform: translateY(-6px); }
-            100% { opacity: 1; transform: translateY(0); }
+        :root {
+            --gold: #c49a3c;
+            --gold-light: #e8c97a;
+            --gold-pale: #f7f0de;
+            --ink: #1a1410;
+            --ink-soft: #3d3329;
+            --sand: #f5f0e8;
+            --sand-deep: #ede5d5;
+            --terracotta: #b85c38;
+            --teal-dark: #0d3d30;
+            --teal: #1a5e47;
+            --teal-mid: #2a7a5f;
+            --surface: #faf8f4;
+            --muted: #8a7d6b;
         }
 
-        /* ── Skeleton shimmer ─────────────────────────────── */
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--surface);
+            font-family: 'DM Sans', sans-serif;
+            color: var(--ink);
+            margin: 0;
+        }
+
+        /* ── SCROLLBAR ─────────────── */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--sand);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--gold);
+            border-radius: 3px;
+        }
+
+        /* ── SHIMMER ──────────────── */
+        @keyframes shimmer {
+            0% {
+                background-position: 200% 0;
+            }
+
+            100% {
+                background-position: -200% 0;
+            }
+        }
+
         .sk {
-            background: linear-gradient(90deg,
-                #ede9e4 25%, #e2ddd7 50%, #ede9e4 75%);
+            background: linear-gradient(90deg, #ede8df 25%, #e0d9cc 50%, #ede8df 75%);
             background-size: 300% 100%;
-            animation: sk-shimmer 1.8s ease-in-out infinite;
+            animation: shimmer 1.8s ease-in-out infinite;
+            border-radius: 6px;
         }
 
-        /* ── Card animation class ─────────────────────────── */
+        /* ── CARD REVEAL ─────────── */
+        @keyframes card-rise {
+            from {
+                opacity: 0;
+                transform: translateY(32px) scale(0.96);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
         .card-animate {
-            animation: card-rise 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+            animation: card-rise 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
         }
 
-        /* ── Hero text stagger ────────────────────────────── */
-        .hero-line { animation: hero-up 0.8s cubic-bezier(0.22, 1, 0.36, 1) both; }
-        .hero-line:nth-child(1) { animation-delay: 0.05s; }
-        .hero-line:nth-child(2) { animation-delay: 0.18s; }
-        .hero-line:nth-child(3) { animation-delay: 0.30s; }
+        /* ── HERO ────────────────── */
+        @keyframes hero-up {
+            from {
+                opacity: 0;
+                transform: translateY(48px);
+            }
 
-        /* ── Pill animation ───────────────────────────────── */
-        .pill-animate { animation: pill-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) both; }
-
-        /* ── Heart pop ────────────────────────────────────── */
-        .heart-pop { animation: heart-pop 0.45s ease; }
-
-        /* ── Count fade ───────────────────────────────────── */
-        .count-animate { animation: count-fade 0.35s ease both; }
-
-        /* ── Smooth card hover lift ───────────────────────── */
-        .hotel-card {
-            transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
-                        box-shadow 0.3s cubic-bezier(0.22, 1, 0.36, 1);
-        }
-        .hotel-card:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 24px 48px -8px rgba(0,0,0,0.18),
-                        0 8px 16px -4px rgba(0,0,0,0.08);
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
-        /* ── Image zoom ───────────────────────────────────── */
-        .hotel-card .card-img {
-            transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
-        }
-        .hotel-card:hover .card-img { transform: scale(1.08); }
-
-        /* ── Pill active ──────────────────────────────────── */
-        .city-pill {
-            transition: all 0.2s ease;
-            white-space: nowrap;
-        }
-        .city-pill.active {
-            background-color: #00261a;
-            color: #ffffff;
-            border-color: #00261a;
+        .hero-line {
+            animation: hero-up 1s cubic-bezier(0.22, 1, 0.36, 1) both;
         }
 
-        /* ── Address spinner ──────────────────────────────── */
-        @keyframes spin { to { transform: rotate(360deg); } }
+        .hero-line:nth-child(1) {
+            animation-delay: 0.1s;
+        }
+
+        .hero-line:nth-child(2) {
+            animation-delay: 0.25s;
+        }
+
+        .hero-line:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        .hero-line:nth-child(4) {
+            animation-delay: 0.55s;
+        }
+
+        /* ── PILL SLIDE IN ────────── */
+        @keyframes pill-in {
+            from {
+                opacity: 0;
+                transform: translateX(-12px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .pill-animate {
+            animation: pill-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+        }
+
+        /* ── COUNT FADE ──────────── */
+        @keyframes count-fade {
+            from {
+                opacity: 0;
+                transform: translateY(-5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .count-animate {
+            animation: count-fade 0.3s ease both;
+        }
+
+        /* ── HEART POP ──────────── */
+        @keyframes heart-pop {
+            0% {
+                transform: scale(1);
+            }
+
+            35% {
+                transform: scale(1.5);
+            }
+
+            65% {
+                transform: scale(0.88);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .heart-pop {
+            animation: heart-pop 0.45s ease;
+        }
+
+        /* ── SPINNER ──────────────── */
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
         .addr-spin {
             display: inline-block;
-            width: 10px; height: 10px;
-            border: 1.5px solid #c0c8c3;
-            border-top-color: #785a06;
+            width: 10px;
+            height: 10px;
+            border: 1.5px solid #d5ccc0;
+            border-top-color: var(--gold);
             border-radius: 50%;
             animation: spin 0.85s linear infinite;
             vertical-align: middle;
             margin-right: 4px;
         }
 
-        /* ── No-scrollbar ─────────────────────────────────── */
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        @keyframes btn-spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
 
-        /* ── Grid fade on filter change ───────────────────── */
-        .grid-fade-out { opacity: 0; transform: translateY(8px); transition: opacity 0.2s, transform 0.2s; }
-        .grid-fade-in  { opacity: 1; transform: translateY(0);   transition: opacity 0.3s, transform 0.3s; }
-
-        /* ── Load more loading state ──────────────────────── */
-        @keyframes btn-spin { to { transform: rotate(360deg); } }
         .btn-spinner {
             display: inline-block;
-            width: 14px; height: 14px;
-            border: 2px solid rgba(255,255,255,0.4);
-            border-top-color: white;
+            width: 14px;
+            height: 14px;
+            border: 2px solid rgba(255, 255, 255, 0.35);
+            border-top-color: #fff;
             border-radius: 50%;
             animation: btn-spin 0.7s linear infinite;
             vertical-align: middle;
             margin-right: 6px;
         }
+
+        /* ── NAV ─────────────────── */
+        .sultan-nav {
+            position: fixed;
+            top: 0;
+            z-index: 50;
+            width: 100%;
+            background: rgba(250, 248, 244, 0.92);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(196, 154, 60, 0.15);
+            transition: box-shadow 0.3s ease;
+        }
+
+        .sultan-nav.scrolled {
+            box-shadow: 0 4px 24px rgba(26, 20, 16, 0.08);
+        }
+
+        .nav-inner {
+            max-width: 1280px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+            height: 68px;
+        }
+
+        .nav-logo {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: var(--teal-dark);
+            text-decoration: none;
+            letter-spacing: 0.04em;
+        }
+
+        .nav-logo span {
+            color: var(--gold);
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .nav-link {
+            font-size: 0.75rem;
+            font-weight: 500;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--muted);
+            text-decoration: none;
+            position: relative;
+            padding-bottom: 2px;
+            transition: color 0.2s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--ink);
+        }
+
+        .nav-link.active {
+            color: var(--teal-dark);
+        }
+
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 1.5px;
+            background: var(--gold);
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .btn-outline-sm {
+            padding: 0.4rem 1rem;
+            border: 1px solid rgba(196, 154, 60, 0.4);
+            border-radius: 100px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--teal-dark);
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .btn-outline-sm:hover {
+            background: var(--gold-pale);
+            border-color: var(--gold);
+        }
+
+        .btn-filled-sm {
+            padding: 0.4rem 1rem;
+            background: var(--teal-dark);
+            border: 1px solid var(--teal-dark);
+            border-radius: 100px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: #fff;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .btn-filled-sm:hover {
+            background: var(--teal);
+            border-color: var(--teal);
+        }
+
+        .nav-icon-btn {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(196, 154, 60, 0.25);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: transparent;
+        }
+
+        .nav-icon-btn:hover {
+            background: var(--gold-pale);
+            border-color: var(--gold);
+        }
+
+        /* ── HERO ─────────────────── */
+        .hero-section {
+            position: relative;
+            height: 60vh;
+            min-height: 460px;
+            display: flex;
+            align-items: flex-end;
+            overflow: hidden;
+        }
+
+        .hero-img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transform-origin: center;
+            animation: hero-zoom 12s ease-in-out infinite alternate;
+        }
+
+        @keyframes hero-zoom {
+            from {
+                transform: scale(1);
+            }
+
+            to {
+                transform: scale(1.06);
+            }
+        }
+
+        .hero-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to bottom,
+                    rgba(13, 61, 48, 0.38) 0%,
+                    rgba(26, 20, 16, 0.1) 45%,
+                    rgba(250, 248, 244, 1) 100%);
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 1280px;
+            margin: 0 auto;
+            width: 100%;
+            padding: 0 2rem 4rem;
+        }
+
+        .hero-eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.4rem 1rem;
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 100px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .hero-eyebrow::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--gold-light);
+        }
+
+        .hero-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(3rem, 7vw, 5.5rem);
+            font-weight: 600;
+            line-height: 1.05;
+            color: #fff;
+            margin: 1rem 0 0.75rem;
+            text-shadow: 0 2px 24px rgba(0, 0, 0, 0.25);
+        }
+
+        .hero-title em {
+            font-style: italic;
+            color: var(--gold-light);
+        }
+
+        .hero-sub {
+            font-size: 1rem;
+            font-weight: 300;
+            color: rgba(255, 255, 255, 0.75);
+            max-width: 440px;
+            line-height: 1.65;
+        }
+
+        .hero-stats {
+            display: flex;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .hero-stat {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .hero-stat-num {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.6rem;
+            font-weight: 600;
+            color: var(--gold-light);
+            line-height: 1;
+        }
+
+        .hero-stat-lbl {
+            font-size: 0.65rem;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        /* ── ORNAMENT LINE ─────────── */
+        .ornament-line {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .ornament-line::before,
+        .ornament-line::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(to right, transparent, rgba(196, 154, 60, 0.4), transparent);
+        }
+
+        .ornament-diamond {
+            width: 8px;
+            height: 8px;
+            background: var(--gold);
+            transform: rotate(45deg);
+            flex-shrink: 0;
+        }
+
+        /* ── PILLS BAR ─────────────── */
+        .pills-bar {
+            background: rgba(250, 248, 244, 0.96);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(196, 154, 60, 0.12);
+            position: sticky;
+            top: 68px;
+            z-index: 40;
+        }
+
+        .pills-inner {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            overflow-x: auto;
+            padding-top: 0.875rem;
+            padding-bottom: 0.875rem;
+        }
+
+        .pills-inner::-webkit-scrollbar {
+            display: none;
+        }
+
+        .city-pill {
+            flex-shrink: 0;
+            white-space: nowrap;
+            padding: 0.45rem 1.1rem;
+            border-radius: 100px;
+            border: 1px solid rgba(196, 154, 60, 0.3);
+            background: transparent;
+            font-size: 0.775rem;
+            font-weight: 500;
+            color: var(--muted);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .city-pill:hover {
+            border-color: var(--gold);
+            color: var(--ink);
+            background: var(--gold-pale);
+        }
+
+        .city-pill.active {
+            background: var(--teal-dark);
+            color: #fff;
+            border-color: var(--teal-dark);
+        }
+
+        /* ── SORT BAR ─────────────── */
+        .sort-bar {
+            position: sticky;
+            top: calc(68px + 46px);
+            z-index: 39;
+            background: rgba(250, 248, 244, 0.96);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(196, 154, 60, 0.08);
+            box-shadow: 0 2px 12px rgba(26, 20, 16, 0.04);
+        }
+
+        .sort-inner {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0.65rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .sort-select-wrap {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.4rem 1rem;
+            border: 1px solid rgba(196, 154, 60, 0.25);
+            border-radius: 100px;
+            background: var(--sand);
+        }
+
+        .sort-select-wrap select {
+            border: none;
+            background: transparent;
+            font-family: inherit;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--ink);
+            cursor: pointer;
+            outline: none;
+        }
+
+        .result-count {
+            font-size: 0.8rem;
+            color: var(--muted);
+        }
+
+        .result-count strong {
+            color: var(--ink);
+            font-weight: 600;
+        }
+
+        /* ── MAIN ─────────────────── */
+        main {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 3rem 2rem 4rem;
+        }
+
+        .section-header {
+            margin-bottom: 2.5rem;
+        }
+
+        .section-eyebrow {
+            font-size: 0.65rem;
+            font-weight: 600;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--gold);
+            margin-bottom: 0.5rem;
+        }
+
+        .section-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2.25rem;
+            font-weight: 600;
+            color: var(--ink);
+        }
+
+        /* ── GRID ─────────────────── */
+        #grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.75rem;
+        }
+
+        @media (max-width: 900px) {
+            #grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1.25rem;
+            }
+        }
+
+        @media (max-width: 540px) {
+            #grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+        }
+
+        /* ── CARD ─────────────────── */
+        .hotel-card {
+            background: #fff;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid rgba(196, 154, 60, 0.1);
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+                box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+                border-color 0.25s ease;
+        }
+
+        .hotel-card:hover {
+            transform: translateY(-7px);
+            box-shadow: 0 28px 56px -10px rgba(26, 20, 16, 0.14),
+                0 8px 20px -4px rgba(196, 154, 60, 0.12);
+            border-color: rgba(196, 154, 60, 0.3);
+        }
+
+        /* Card image */
+        .card-img-wrap {
+            position: relative;
+            overflow: hidden;
+            height: 200px;
+        }
+
+        .card-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .hotel-card:hover .card-img {
+            transform: scale(1.09);
+        }
+
+        .card-img-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(13, 61, 48, 0.55) 0%, transparent 55%);
+            pointer-events: none;
+        }
+
+        /* Heart button */
+        .heart-btn {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(6px);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+        }
+
+        .heart-btn:hover {
+            transform: scale(1.12);
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+        }
+
+        /* Type badge */
+        .type-badge {
+            position: absolute;
+            bottom: 12px;
+            left: 12px;
+            padding: 3px 10px;
+            border-radius: 100px;
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: #fff;
+            backdrop-filter: blur(6px);
+        }
+
+        /* Rating badge */
+        .rating-pill {
+            position: absolute;
+            bottom: 12px;
+            right: 12px;
+            padding: 3px 8px;
+            border-radius: 100px;
+            font-size: 11px;
+            font-weight: 700;
+            background: rgba(196, 154, 60, 0.92);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 3px;
+        }
+
+        /* Card body */
+        .card-body {
+            padding: 1rem 1.1rem 0.75rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .card-name {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.15rem;
+            font-weight: 600;
+            line-height: 1.25;
+            color: var(--ink);
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .card-location {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            font-size: 0.75rem;
+            color: var(--muted);
+        }
+
+        .card-location .material-symbols-outlined {
+            font-size: 13px;
+            color: var(--gold);
+        }
+
+        .card-addr {
+            font-size: 0.68rem;
+            color: #b0a494;
+            font-style: italic;
+            line-height: 1.4;
+        }
+
+        .card-rating-row {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 0.25rem;
+        }
+
+        .rating-score {
+            padding: 2px 7px;
+            border-radius: 6px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .rating-label {
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--ink);
+        }
+
+        .rating-count {
+            font-size: 0.68rem;
+            color: var(--muted);
+        }
+
+        .card-labels {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            margin-top: 0.25rem;
+        }
+
+        .card-label {
+            font-size: 0.63rem;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+            padding: 2px 8px;
+            border-radius: 100px;
+            background: rgba(196, 154, 60, 0.1);
+            color: #7a5500;
+            border: 1px solid rgba(196, 154, 60, 0.25);
+        }
+
+        /* Card footer */
+        .card-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.65rem 1.1rem 0.9rem;
+            border-top: 1px solid rgba(196, 154, 60, 0.1);
+            margin-top: auto;
+            gap: 0.5rem;
+        }
+
+        .card-price {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--teal-dark);
+        }
+
+        .card-price small {
+            font-size: 0.7rem;
+            font-weight: 400;
+            color: var(--muted);
+            font-family: 'DM Sans', sans-serif;
+        }
+
+        .card-map-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--muted);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .card-map-link:hover {
+            color: var(--teal);
+        }
+
+        .card-map-link .material-symbols-outlined {
+            font-size: 14px;
+        }
+
+        .card-cta {
+            display: inline-block;
+            padding: 0.45rem 1.1rem;
+            background: linear-gradient(135deg, var(--teal-dark), var(--teal-mid));
+            color: #fff;
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            border-radius: 100px;
+            text-decoration: none;
+            transition: all 0.25s ease;
+            box-shadow: 0 2px 10px rgba(13, 61, 48, 0.25);
+        }
+
+        .card-cta:hover {
+            background: linear-gradient(135deg, var(--teal), #3a8f6f);
+            box-shadow: 0 4px 18px rgba(13, 61, 48, 0.35);
+            transform: translateY(-1px);
+        }
+
+        /* ── SKELETON ─────────────── */
+        .sk-card {
+            background: #fff;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid rgba(196, 154, 60, 0.08);
+        }
+
+        /* ── GRID TRANSITION ─────── */
+        .grid-fade-out {
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.2s, transform 0.2s;
+        }
+
+        .grid-fade-in {
+            opacity: 1;
+            transform: translateY(0);
+            transition: opacity 0.3s, transform 0.3s;
+        }
+
+        /* ── LOAD MORE ────────────── */
+        .load-more-wrap {
+            text-align: center;
+            margin-top: 4rem;
+        }
+
+        .load-more-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.9rem 2.5rem;
+            background: linear-gradient(135deg, var(--teal-dark), var(--teal-mid));
+            color: #fff;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            border: none;
+            border-radius: 100px;
+            cursor: pointer;
+            box-shadow: 0 6px 24px rgba(13, 61, 48, 0.28);
+            transition: all 0.3s ease;
+        }
+
+        .load-more-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 32px rgba(13, 61, 48, 0.36);
+        }
+
+        .load-more-btn:active {
+            transform: scale(0.98);
+        }
+
+        .load-more-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .load-more-btn.hidden {
+            display: none;
+        }
+
+        #page-info {
+            font-size: 0.8rem;
+            color: var(--muted);
+            margin-top: 0.75rem;
+        }
+
+        /* ── FOOTER ───────────────── */
+        .sultan-footer {
+            border-top: 1px solid rgba(196, 154, 60, 0.12);
+            background: var(--sand);
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+
+        .footer-logo {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.5rem;
+            color: var(--teal-dark);
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .footer-logo span {
+            color: var(--gold);
+        }
+
+        .footer-credit {
+            font-size: 0.78rem;
+            color: var(--muted);
+            line-height: 1.8;
+        }
+
+        .footer-credit a {
+            color: var(--teal);
+            font-weight: 500;
+        }
+
+        /* ── NO SCROLLBAR ─────────── */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* ── RESPONSIVE NAV ───────── */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+        }
+
+        /* ── DARK MODE (html.dark) ── */
+        html.dark {
+            --gold: #d4af5e;
+            --gold-light: #ecd089;
+            --gold-pale: #2a2318;
+            --ink: #f4f0e8;
+            --ink-soft: #b5a99a;
+            --sand: #1e1c18;
+            --sand-deep: #2a2620;
+            --terracotta: #e8956a;
+            --teal-dark: #5eead4;
+            --teal: #34d399;
+            --teal-mid: #2dd4bf;
+            --surface: #141210;
+            --muted: #9c9082;
+        }
+
+        html.dark body {
+            background: var(--surface);
+            color: var(--ink);
+        }
+
+        html.dark .sultan-nav {
+            background: rgba(20, 18, 16, 0.94);
+            border-bottom-color: rgba(196, 154, 60, 0.22);
+        }
+
+        html.dark .sultan-nav.scrolled {
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+        }
+
+        html.dark .nav-logo {
+            color: #6ee7b7;
+        }
+
+        html.dark .nav-link {
+            color: #a8a29e;
+        }
+
+        html.dark .nav-link:hover {
+            color: #f5f0e8;
+        }
+
+        html.dark .nav-link.active {
+            color: #6ee7b7;
+        }
+
+        html.dark .btn-outline-sm {
+            border-color: rgba(196, 154, 60, 0.45);
+            color: #a7f3d0;
+        }
+
+        html.dark .btn-outline-sm:hover {
+            background: rgba(196, 154, 60, 0.12);
+            border-color: var(--gold);
+        }
+
+        html.dark .btn-filled-sm {
+            background: #0f3d2e;
+            border-color: #0f3d2e;
+        }
+
+        html.dark .nav-icon-btn {
+            border-color: rgba(196, 154, 60, 0.35);
+        }
+
+        html.dark .nav-icon-btn:hover {
+            background: rgba(196, 154, 60, 0.12);
+        }
+
+        html.dark .hero-overlay {
+            background: linear-gradient(
+                to bottom,
+                rgba(13, 61, 48, 0.48) 0%,
+                rgba(26, 20, 16, 0.22) 45%,
+                rgba(20, 18, 16, 1) 100%
+            );
+        }
+
+        html.dark .pills-bar {
+            background: rgba(20, 18, 16, 0.97);
+            border-bottom-color: rgba(196, 154, 60, 0.14);
+        }
+
+        html.dark .sort-bar {
+            background: rgba(20, 18, 16, 0.97);
+            border-bottom-color: rgba(196, 154, 60, 0.1);
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.25);
+        }
+
+        html.dark .sort-select-wrap {
+            background: #2a2824;
+            border-color: rgba(196, 154, 60, 0.3);
+        }
+
+        html.dark .city-pill {
+            border-color: rgba(196, 154, 60, 0.35);
+            color: #a8a29e;
+        }
+
+        html.dark .city-pill:hover {
+            color: var(--ink);
+        }
+
+        html.dark .city-pill.active {
+            background: #0f3d2e;
+            border-color: #0f3d2e;
+            color: #fff;
+        }
+
+        html.dark .hotel-card {
+            background: #1c1a17;
+            border-color: rgba(196, 154, 60, 0.18);
+        }
+
+        html.dark .hotel-card:hover {
+            box-shadow: 0 28px 56px -10px rgba(0, 0, 0, 0.45);
+        }
+
+        html.dark .card-body,
+        html.dark .card-name {
+            color: var(--ink);
+        }
+
+        html.dark .sk-card {
+            background: #1c1a17;
+            border-color: rgba(196, 154, 60, 0.12);
+        }
+
+        html.dark .sk {
+            background: linear-gradient(90deg, #2a2620 25%, #36322c 50%, #2a2620 75%);
+        }
+
+        html.dark .sultan-footer {
+            background: #1a1815;
+            border-top-color: rgba(196, 154, 60, 0.15);
+        }
+
+        html.dark .footer-logo {
+            color: #6ee7b7;
+        }
+
+        html.dark ::-webkit-scrollbar-track {
+            background: var(--sand);
+        }
     </style>
 </head>
-<body class="bg-background font-body text-on-background selection:bg-secondary-container selection:text-on-secondary-container">
 
-{{-- ═══════════════════════════ TOP NAV ════════════════════════════════ --}}
-<nav class="fixed top-0 z-50 w-full bg-surface/80 backdrop-blur-md">
-    <div class="mx-auto flex w-full max-w-7xl items-center justify-between px-6 py-4 md:px-8">
+<body>
 
-        <a href="{{ url('/') }}" class="font-headline text-2xl font-bold text-emerald-900 dark:text-emerald-400">
-            Sultan
-        </a>
+    {{-- ════════════════ NAV ════════════════ --}}
+    <nav class="sultan-nav" id="main-nav">
+        <div class="nav-inner">
+            <a href="{{ url('/') }}" class="nav-logo">Sul<span>t</span>an</a>
 
-        <div class="hidden items-center gap-8 md:flex">
-            <a class="font-body text-sm font-medium uppercase tracking-wider text-stone-600 transition-colors hover:text-emerald-700 dark:text-stone-400 dark:hover:text-emerald-300"
-               href="{{ url('/') }}">Home</a>
-            <a class="font-body text-sm font-medium uppercase tracking-wider text-stone-600 transition-colors hover:text-emerald-700 dark:text-stone-400 dark:hover:text-emerald-300"
-               href="{{ url('/') }}#destinations">Explore</a>
-            <a class="font-body text-sm font-medium uppercase tracking-wider text-stone-600 transition-colors hover:text-emerald-700 dark:text-stone-400 dark:hover:text-emerald-300"
-               href="{{ route('map.index') }}">Map</a>
-            <a class="font-body text-sm font-medium uppercase tracking-wider text-stone-600 transition-colors hover:text-emerald-700 dark:text-stone-400 dark:hover:text-emerald-300"
-               href="{{ url('/') }}#categories">Restaurants</a>
-            <a class="border-b-2 border-amber-500 pb-1 font-body text-sm font-medium uppercase tracking-wider text-emerald-900 dark:text-emerald-400"
-               href="{{ route('hotels.index') }}">Hotels</a>
-            <a class="font-body text-sm font-medium uppercase tracking-wider text-stone-600 transition-colors hover:text-emerald-700 dark:text-stone-400 dark:hover:text-emerald-300"
-               href="{{ url('/') }}#experiences">Experiences</a>
-        </div>
+            <div class="nav-links">
+                <a href="{{ url('/') }}" class="nav-link">Home</a>
+                <a href="{{ url('/') }}#destinations" class="nav-link">Explore</a>
+                <a href="{{ route('map.index') }}" class="nav-link">Map</a>
+                <a href="{{ url('/') }}#categories" class="nav-link">Restaurants</a>
+                <a href="{{ route('hotels.index') }}" class="nav-link active">Hotels</a>
+                <a href="{{ url('/') }}#experiences" class="nav-link">Experiences</a>
+            </div>
 
-        <div class="flex items-center gap-2 md:gap-4">
-            @auth
-                <span class="hidden max-w-[10rem] truncate text-xs font-medium text-stone-600 sm:inline dark:text-stone-400">
+            <div class="nav-actions">
+                @auth
+                <span style="font-size:0.75rem;color:var(--muted);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
                     Hi, {{ Auth::user()->name }}
                 </span>
-                <a href="{{ route('profile', Auth::id()) }}"
-                   class="hidden rounded-full border border-outline-variant/40 px-3 py-1.5 font-body text-xs font-semibold uppercase tracking-wider text-primary transition hover:bg-surface-container-high sm:inline">
-                    Profile
-                </a>
-                <form method="POST" action="{{ route('logout') }}" class="inline">
+                <a href="{{ route('profile', Auth::id()) }}" class="btn-outline-sm">Profile</a>
+                <form method="POST" action="{{ route('logout') }}" style="display:inline;">
                     @csrf
-                    <button type="submit"
-                            class="rounded-full border border-outline-variant/40 px-3 py-1.5 font-body text-xs font-semibold uppercase tracking-wider text-stone-600 transition hover:bg-surface-container-high dark:text-stone-400">
-                        Log out
-                    </button>
+                    <button type="submit" class="btn-outline-sm" style="cursor:pointer;">Log out</button>
                 </form>
-            @else
-                <a href="{{ route('login') }}"
-                   class="rounded-full border border-outline-variant/40 px-3 py-1.5 font-body text-xs font-semibold uppercase tracking-wider text-primary transition hover:bg-surface-container-high">
-                    Log in
+                @else
+                <a href="{{ route('login') }}" class="btn-outline-sm">Log in</a>
+                <a href="{{ route('signup') }}" class="btn-filled-sm">Sign up</a>
+                @endauth
+                <x-theme-toggle class="!h-[38px] !w-[38px] !rounded-full !border !border-amber-600/30 !bg-transparent !text-amber-800 hover:!bg-amber-100/20 dark:!border-amber-400/30 dark:!text-amber-200 dark:hover:!bg-white/10" />
+                <button class="nav-icon-btn" aria-label="Search" type="button">
+                    <span class="material-symbols-outlined" style="font-size:18px;color:var(--teal-dark);">search</span>
+                </button>
+                <a href="{{ auth()->check() ? route('profile', auth()->id()) : route('login') }}"
+                    class="nav-icon-btn" aria-label="Account">
+                    <span class="material-symbols-outlined" style="font-size:18px;color:var(--teal-dark);">account_circle</span>
                 </a>
-                <a href="{{ route('signup') }}"
-                   class="rounded-full bg-primary px-3 py-1.5 font-body text-xs font-semibold uppercase tracking-wider text-on-primary transition hover:opacity-90">
-                    Sign up
-                </a>
-            @endauth
-            <button type="button" class="rounded-full p-2 transition-colors hover:bg-surface-container-high" aria-label="Search">
-                <span class="material-symbols-outlined text-emerald-900 dark:text-emerald-400">search</span>
-            </button>
-            <a href="{{ auth()->check() ? route('profile', auth()->id()) : route('login') }}"
-               class="rounded-full p-2 transition-colors hover:bg-surface-container-high" aria-label="Account">
-                <span class="material-symbols-outlined text-emerald-900 dark:text-emerald-400">account_circle</span>
-            </a>
+            </div>
         </div>
-    </div>
-</nav>
+    </nav>
 
-{{-- ═══════════════════════════ HERO ═══════════════════════════════════ --}}
-<header class="relative flex h-[52vh] min-h-[380px] items-end overflow-hidden">
-    <div class="absolute inset-0">
-        <img
-            class="h-full w-full object-cover"
+    {{-- ════════════════ HERO ════════════════ --}}
+    <header class="hero-section">
+        <img class="hero-img"
             src="https://lh3.googleusercontent.com/aida-public/AB6AXuB9__zftsu2VrpDdniBahUGwzkbBtcuYoO7XOGwGG_rmn0EHRT1h46zyiml7OzXfS2pCRuIXElrAVK071acmCemF2LN6-TUX7mJCf-D7zLVVqOlM5RxweuZcVauiltUvfBEQq9wNr8usHNublcpj3seyNqwdBlrXG4PYLBfYTRFW6UqMyArf-zeyZjXXq4mG4H8SLrlAZ1r3FIZSfKcF_xB3eV6LIaNZ0KW1r0aZ6CH7IWaWq7pQVbK9zJVnZBIWcbmBTUwEdhUUvs"
             alt="Luxury Moroccan riad courtyard"
-            fetchpriority="high"
-        />
-        <div class="absolute inset-0 bg-gradient-to-b from-primary/50 via-primary/20 to-background"></div>
-    </div>
-    <div class="relative z-10 mx-auto w-full max-w-7xl px-6 pb-16 md:px-8">
-        <div class="hero-line">
-            <span class="inline-block rounded-full border border-white/25 bg-white/10 px-4 py-1.5 font-body text-xs font-bold uppercase tracking-[0.2rem] text-white backdrop-blur-sm">
-                🇲🇦 &nbsp;Xotelo · 3,000+ Properties
-            </span>
+            fetchpriority="high" />
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <div class="hero-eyebrow hero-line">Morocco · Curated Stays</div>
+            <h1 class="hero-title hero-line">
+                Hotels &amp; Riads<br /><em>in Morocco</em>
+            </h1>
+            <p class="hero-sub hero-line">From ancient medina riads to coastal resorts — every stay, perfectly matched.</p>
+            <div class="hero-stats hero-line">
+                <div class="hero-stat">
+                    <span class="hero-stat-num">3,000+</span>
+                    <span class="hero-stat-lbl">Properties</span>
+                </div>
+                <div class="hero-stat" style="border-left:1px solid rgba(255,255,255,0.2);padding-left:2rem;">
+                    <span class="hero-stat-num">14</span>
+                    <span class="hero-stat-lbl">Cities</span>
+                </div>
+                <div class="hero-stat" style="border-left:1px solid rgba(255,255,255,0.2);padding-left:2rem;">
+                    <span class="hero-stat-num">4.8★</span>
+                    <span class="hero-stat-lbl">Avg. Rating</span>
+                </div>
+            </div>
         </div>
-        <h1 class="hero-line mt-4 font-headline text-5xl leading-tight text-white drop-shadow-lg md:text-6xl lg:text-7xl">
-            Hotels &amp; Stays<br class="hidden md:block" />in Morocco
-        </h1>
-        <p class="hero-line mt-3 max-w-lg font-body text-base font-light text-white/80 md:text-lg">
-            Riads, resorts, and boutique guesthouses — curated for every traveller.
+    </header>
+
+    {{-- ════════════════ CITY PILLS ════════════════ --}}
+    <div class="pills-bar">
+        <div class="pills-inner no-scrollbar" id="city-pills" role="tablist" aria-label="Filter by city">
+            {{-- JS injected --}}
+        </div>
+    </div>
+
+    {{-- ════════════════ SORT BAR ════════════════ --}}
+    <div class="sort-bar">
+        <div class="sort-inner">
+            <div class="sort-select-wrap">
+                <span class="material-symbols-outlined" style="font-size:16px;color:var(--gold);">sort</span>
+                <select id="sort-sel">
+                    <option value="best_value">Best Value</option>
+                    <option value="popularity">Most Popular</option>
+                </select>
+            </div>
+            <span id="result-count" class="result-count">Loading hotels…</span>
+        </div>
+    </div>
+
+    {{-- ════════════════ MAIN ════════════════ --}}
+    <main>
+        <div class="section-header">
+            <div class="ornament-line">
+                <div class="ornament-diamond"></div>
+            </div>
+            <div class="section-eyebrow">Available Now</div>
+            <h2 class="section-title">Find Your Perfect Stay</h2>
+        </div>
+
+        <div id="grid" role="list"></div>
+
+        <div class="load-more-wrap">
+            <button id="load-more" class="load-more-btn hidden" type="button">
+                Discover More Hotels
+            </button>
+            <p id="page-info"></p>
+        </div>
+    </main>
+
+    {{-- ════════════════ FOOTER ════════════════ --}}
+    <footer class="sultan-footer">
+        <div class="footer-logo">Sul<span>t</span>an</div>
+        <p class="footer-credit">
+            Powered by <a href="https://xotelo.com" target="_blank" rel="noopener">Xotelo Hotel API</a>
+            &nbsp;·&nbsp;
+            <a href="https://nominatim.openstreetmap.org" target="_blank" rel="noopener">OpenStreetMap / Nominatim</a>
+            <br />Hotel data sourced from TripAdvisor
         </p>
-    </div>
-</header>
+    </footer>
 
-{{-- ═══════════════════════════ CITY PILLS ═════════════════════════════ --}}
-<div class="border-b border-outline-variant/30 bg-surface/95 backdrop-blur-md">
-    <div class="mx-auto max-w-7xl px-6 md:px-8">
-        <div id="city-pills"
-             class="no-scrollbar flex items-center gap-2 overflow-x-auto py-4"
-             role="tablist"
-             aria-label="Filter by city">
-            {{-- Pills injected by JS --}}
-        </div>
-    </div>
-</div>
+    {{-- ════════════════ JS ════════════════ --}}
+    <script>
+        var API_BASE = '/api/hotels';
+        var PAGE_SIZE = 30;
 
-{{-- ═══════════════════════════ SORT BAR ═══════════════════════════════ --}}
-<div class="sticky top-16 z-40 border-b border-outline-variant/20 bg-surface/95 backdrop-blur-md shadow-sm">
-    <div class="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-6 py-3 md:px-8">
-        <div class="flex items-center gap-2 rounded-full border border-outline-variant/40 bg-surface-container-low px-4 py-2">
-            <span class="material-symbols-outlined text-[18px] leading-none text-secondary">sort</span>
-            <select id="sort-sel"
-                    class="cursor-pointer border-none bg-transparent font-body text-sm text-on-surface focus:outline-none focus:ring-0">
-                <option value="best_value">Best Value</option>
-                <option value="popularity">Most Popular</option>
-            </select>
-        </div>
-        <span id="result-count" class="font-body text-sm text-on-surface-variant">
-            Loading hotels…
-        </span>
-    </div>
-</div>
+        var hotels = [],
+            filtered = [],
+            favorites = {};
+        var cityFilter = 'all',
+            sortBy = 'best_value';
+        var offset = 0,
+            total = 0,
+            isBusy = false;
+        var addrCache = {},
+            addrQueue = [],
+            queueBusy = false;
 
-{{-- ═══════════════════════════ MAIN ═══════════════════════════════════ --}}
-<main class="mx-auto max-w-7xl px-6 py-8 md:px-8">
+        var grid = document.getElementById('grid');
+        var pillsEl = document.getElementById('city-pills');
+        var sortEl = document.getElementById('sort-sel');
+        var countEl = document.getElementById('result-count');
+        var moreBtn = document.getElementById('load-more');
+        var pageInfo = document.getElementById('page-info');
 
-    {{-- Section header --}}
-    <div class="mb-6">
-        <span class="mb-1 block font-body text-xs font-bold uppercase tracking-[0.2rem] text-secondary">
-            Available Now
-        </span>
-        <h2 class="font-headline text-3xl text-on-surface md:text-4xl">Find Your Stay</h2>
-    </div>
+        /* Nav scroll shadow */
+        window.addEventListener('scroll', function() {
+            document.getElementById('main-nav').classList.toggle('scrolled', window.scrollY > 20);
+        }, {
+            passive: true
+        });
 
-    {{-- Cards grid --}}
-    <div id="grid"
-         class="grid grid-cols-2 gap-4 md:grid-cols-4"
-         role="list">
-    </div>
+        /* Helpers */
+        function esc(s) {
+            return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
 
-    {{-- Load more --}}
-    <div class="mt-14 flex flex-col items-center gap-3">
-        <button id="load-more"
-                class="hidden rounded-full bg-gradient-to-br from-primary to-primary-container px-10 py-4 font-body text-sm font-bold uppercase tracking-widest text-white shadow-lg transition-all hover:scale-[0.98] hover:opacity-90 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50">
-            Load More Hotels
-        </button>
-        <p id="page-info" class="font-body text-sm text-on-surface-variant"></p>
-    </div>
-</main>
-
-{{-- ═══════════════════════════ FOOTER ════════════════════════════════ --}}
-<footer class="mt-8 border-t border-outline-variant/20 bg-surface-container-low py-12 text-center">
-    <p class="font-body text-sm text-on-surface-variant">
-        Powered by
-        <a href="https://xotelo.com" target="_blank" rel="noopener"
-           class="font-semibold text-primary underline-offset-2 hover:underline">Xotelo Hotel API</a>
-        &amp;
-        <a href="https://nominatim.openstreetmap.org" target="_blank" rel="noopener"
-           class="font-semibold text-primary underline-offset-2 hover:underline">OpenStreetMap / Nominatim</a>
-        &nbsp;·&nbsp; Hotel data sourced from TripAdvisor
-    </p>
-</footer>
-
-{{-- ═══════════════════════════ JAVASCRIPT ════════════════════════════ --}}
-<script>
-/* ═══════════════════════════════════════════════════════════════════════
-   CONFIG
-═══════════════════════════════════════════════════════════════════════ */
-var API_BASE  = '/api/hotels';
-var PAGE_SIZE = 30;
-
-/* ═══════════════════════════════════════════════════════════════════════
-   STATE
-═══════════════════════════════════════════════════════════════════════ */
-var hotels     = [];
-var filtered   = [];
-var favorites  = {};
-var cityFilter = 'all';
-var sortBy     = 'best_value';
-var offset     = 0;
-var total      = 0;
-var isBusy     = false;
-
-/* Nominatim queue */
-var addrCache = {};
-var addrQueue = [];
-var queueBusy = false;
-
-/* ═══════════════════════════════════════════════════════════════════════
-   DOM REFS
-═══════════════════════════════════════════════════════════════════════ */
-var grid      = document.getElementById('grid');
-var pillsEl   = document.getElementById('city-pills');
-var sortEl    = document.getElementById('sort-sel');
-var countEl   = document.getElementById('result-count');
-var moreBtn   = document.getElementById('load-more');
-var pageInfo  = document.getElementById('page-info');
-
-/* ═══════════════════════════════════════════════════════════════════════
-   HELPERS
-═══════════════════════════════════════════════════════════════════════ */
-function esc(s) {
-    return String(s)
-        .replace(/&/g,'&amp;').replace(/</g,'&lt;')
-        .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-
-function pause(ms) { return new Promise(function(r){ setTimeout(r, ms); }); }
-
-function cityFromUrl(url) {
-    try {
-        var seg = url.split('/').pop().replace('.html','').split('-').pop();
-        return seg.split('_')[0];
-    } catch(e) { return 'Morocco'; }
-}
-
-function shortLocFromUrl(url) {
-    try {
-        var seg   = url.split('/').pop().replace('.html','').split('-').pop();
-        var words = seg.split('_');
-        return words.length > 1 ? words[0] + ', ' + words.slice(1).join(' ') : words[0];
-    } catch(e) { return 'Morocco'; }
-}
-
-function renderStars(r) {
-    var f = Math.round(r);
-    return '★'.repeat(f) + '☆'.repeat(5 - f);
-}
-
-function ratingLabel(r) {
-    if (r >= 9.5) return 'Exceptional';
-    if (r >= 9.0) return 'Wonderful';
-    if (r >= 8.5) return 'Fabulous';
-    if (r >= 8.0) return 'Very Good';
-    if (r >= 7.5) return 'Good';
-    if (r >= 7.0) return 'Pleasant';
-    return 'Reviewed';
-}
-
-function ratingBg(r) {
-    if (r >= 9.0) return '#00261a';
-    if (r >= 8.5) return '#0f5132';
-    if (r >= 8.0) return '#0d6e6e';
-    if (r >= 7.0) return '#7a5200';
-    return '#555';
-}
-
-function typeBadgeBg(type) {
-    var t = (type || '').toLowerCase().replace(/\s+/g,'');
-    if (t.includes('hostel'))     return '#5b21b6';
-    if (t.includes('resort'))     return '#92400e';
-    if (t.includes('guest'))      return '#065f46';
-    if (t.includes('smallhotel')) return '#1e3a8a';
-    return '#00261a';
-}
-
-function priceStr(p) {
-    return p ? '$' + p.minimum + ' – $' + p.maximum : null;
-}
-
-/* ═══════════════════════════════════════════════════════════════════════
-   CARD HTML  — Booking.com inspired, Sultan design tokens
-═══════════════════════════════════════════════════════════════════════ */
-function cardHTML(hotel, animDelay) {
-    var cardId   = 'card-' + hotel.key.replace(/[^a-z0-9]/gi, '-');
-    var addrId   = 'addr-' + cardId;
-    var shortLoc = shortLocFromUrl(hotel.url);
-    var city     = cityFromUrl(hotel.url);
-    var mapsUrl  = 'https://maps.google.com/?q=' + hotel.geo.latitude + ',' + hotel.geo.longitude;
-    var price    = priceStr(hotel.price_ranges);
-    var rating   = hotel.review_summary.rating;
-    var isFav    = favorites[hotel.key] ? true : false;
-
-    var imgHTML = hotel.image
-        ? '<img src="' + esc(hotel.image) + '" alt="' + esc(hotel.name) + '" ' +
-          'loading="lazy" class="card-img h-full w-full object-cover" ' +
-          'onerror="this.parentElement.innerHTML=\'<div style=\\\"background:#f0ede9;height:100%;display:flex;align-items:center;justify-content:center;font-size:3rem;\\\">🏨</div>\'" />'
-        : '<div style="background:#f0ede9;height:100%;display:flex;align-items:center;justify-content:center;font-size:3rem;">🏨</div>';
-
-    var heartFill   = isFav ? '#e11d48' : 'none';
-    var heartStroke = isFav ? '#e11d48' : 'currentColor';
-
-    var labelsHTML = '';
-    (hotel.merchandising_labels || []).forEach(function(l) {
-        labelsHTML += '<span style="background:rgba(120,90,6,0.1);color:#5b4300;border:1px solid rgba(120,90,6,0.25);padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600;">✓ ' + esc(l) + '</span>';
-    });
-
-    return (
-        '<article class="hotel-card card-animate flex flex-col overflow-hidden rounded-xl bg-white"' +
-            ' id="' + cardId + '" role="listitem"' +
-            ' style="animation-delay:' + animDelay + 'ms; box-shadow: 0 2px 10px rgba(0,0,0,0.08);">' +
-
-            /* ── Image ── */
-            '<div class="relative overflow-hidden" style="height:160px;">' +
-                imgHTML +
-
-                /* Gradient bottom fade */
-                '<div class="absolute inset-x-0 bottom-0 h-16" ' +
-                     'style="background:linear-gradient(to top,rgba(0,0,0,0.35),transparent);pointer-events:none;"></div>' +
-
-                /* Heart button */
-                '<button class="heart-btn absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-white/90 shadow-md backdrop-blur-sm transition-transform hover:scale-110 active:scale-90"' +
-                        ' data-key="' + esc(hotel.key) + '" aria-label="Save to favourites" type="button">' +
-                    '<svg width="18" height="18" viewBox="0 0 24 24" fill="' + heartFill + '"' +
-                         ' stroke="' + heartStroke + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
-                        '<path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>' +
-                    '</svg>' +
-                '</button>' +
-
-                /* Type badge */
-                '<span class="absolute bottom-3 left-3 rounded-full px-2.5 py-0.5 font-body text-[11px] font-bold text-white"' +
-                      ' style="background:' + typeBadgeBg(hotel.accommodation_type) + ';backdrop-filter:blur(4px);">' +
-                    esc(hotel.accommodation_type || 'Hotel') +
-                '</span>' +
-            '</div>' +
-
-            /* ── Body ── */
-            '<div class="flex flex-1 flex-col gap-1.5 px-3 py-2.5">' +
-
-                /* Name */
-                '<h3 class="font-headline text-sm font-bold leading-snug text-on-surface" ' +
-                    'style="display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;">' +
-                    esc(hotel.name) +
-                '</h3>' +
-
-                /* Location */
-                '<p class="flex items-center gap-0.5 font-body text-[11px] text-on-surface-variant">' +
-                    '<span class="material-symbols-outlined text-[12px] leading-none text-secondary">location_on</span>' +
-                    esc(shortLoc) +
-                '</p>' +
-
-                /* Street address (lazy) */
-                '<p id="' + addrId + '"' +
-                   ' class="font-body text-[10px] italic text-on-surface-variant/60"' +
-                   ' data-lat="' + hotel.geo.latitude + '"' +
-                   ' data-lon="' + hotel.geo.longitude + '">' +
-                    '<span class="addr-spin"></span>Loading…' +
-                '</p>' +
-
-                /* Rating row */
-                '<div class="mt-1 flex items-center gap-2">' +
-                    '<span class="flex-shrink-0 rounded-md px-1.5 py-0.5 font-body text-xs font-bold text-white"' +
-                          ' style="background:' + ratingBg(rating) + ';">' +
-                        rating.toFixed(1) +
-                    '</span>' +
-                    '<p class="font-body text-xs font-semibold text-on-surface">' + ratingLabel(rating) + '</p>' +
-                    '<p class="font-body text-[10px] text-on-surface-variant">· ' +
-                        hotel.review_summary.count.toLocaleString() +
-                    '</p>' +
-                '</div>' +
-
-                /* Labels (one line max) */
-                (labelsHTML ? '<div class="flex flex-wrap gap-1">' + labelsHTML + '</div>' : '') +
-
-            '</div>' +
-
-            /* ── Footer ── */
-            '<div class="mt-auto flex items-center justify-between border-t border-outline-variant/20 bg-surface-container-low/40 px-3 py-2">' +
-                '<a href="' + esc(mapsUrl) + '" target="_blank" rel="noopener"' +
-                   ' class="inline-flex items-center gap-0.5 font-body text-[11px] font-semibold text-primary transition-colors hover:text-primary-container">' +
-                    '<span class="material-symbols-outlined text-[13px] leading-none">map</span>' +
-                    'Map' +
-                '</a>' +
-
-                (price
-                    ? '<p class="font-body text-xs font-bold text-on-surface">' + esc(price) + '</p>'
-                    : '') +
-
-                '<a href="' + esc(hotel.url) + '" target="_blank" rel="noopener"' +
-                   ' class="rounded-full px-2.5 py-1 font-body text-[10px] font-bold uppercase tracking-wider text-white transition-all hover:opacity-90"' +
-                   ' style="background:linear-gradient(135deg,#00261a,#0f3d2e);">' +
-                    'View ↗' +
-                '</a>' +
-            '</div>' +
-
-        '</article>'
-    );
-}
-
-/* ═══════════════════════════════════════════════════════════════════════
-   SKELETON CARDS
-═══════════════════════════════════════════════════════════════════════ */
-function showSkeletons(n) {
-    var sk = '';
-    for (var i = 0; i < n; i++) {
-        sk +=
-            '<div class="overflow-hidden rounded-xl bg-white" style="box-shadow:0 2px 10px rgba(0,0,0,0.08);" aria-hidden="true">' +
-                '<div class="sk" style="height:160px;"></div>' +
-                '<div style="padding:10px 12px;display:flex;flex-direction:column;gap:8px;">' +
-                    '<div class="sk" style="height:14px;width:85%;border-radius:20px;"></div>' +
-                    '<div class="sk" style="height:11px;width:55%;border-radius:20px;"></div>' +
-                    '<div class="sk" style="height:10px;width:70%;border-radius:20px;"></div>' +
-                    '<div style="display:flex;gap:8px;align-items:center;">' +
-                        '<div class="sk" style="height:22px;width:34px;border-radius:6px;"></div>' +
-                        '<div class="sk" style="height:11px;width:50%;border-radius:20px;"></div>' +
-                    '</div>' +
-                '</div>' +
-                '<div style="border-top:1px solid rgba(0,0,0,0.07);padding:7px 12px;display:flex;justify-content:space-between;gap:8px;">' +
-                    '<div class="sk" style="height:22px;width:40px;border-radius:20px;"></div>' +
-                    '<div class="sk" style="height:22px;width:60px;border-radius:20px;"></div>' +
-                    '<div class="sk" style="height:22px;width:48px;border-radius:20px;"></div>' +
-                '</div>' +
-            '</div>';
-    }
-    grid.innerHTML = sk;
-}
-
-/* ═══════════════════════════════════════════════════════════════════════
-   RESULT COUNT
-═══════════════════════════════════════════════════════════════════════ */
-function updateCount() {
-    countEl.innerHTML = '';
-    var span = document.createElement('span');
-    span.className = 'count-animate';
-    span.innerHTML =
-        'Showing <strong style="color:#1c1c19;">' + filtered.length + '</strong>' +
-        ' of <strong style="color:#1c1c19;">' + total.toLocaleString() + '</strong> hotels';
-    countEl.appendChild(span);
-}
-
-/* ═══════════════════════════════════════════════════════════════════════
-   CITY PILLS
-═══════════════════════════════════════════════════════════════════════ */
-function buildPills(list) {
-    /* Collect unique cities preserving first-seen order */
-    var seen = {};
-    var cities = ['all'];
-    list.forEach(function(h) {
-        var c = cityFromUrl(h.url);
-        if (!seen[c]) { seen[c] = true; cities.push(c); }
-    });
-    cities.sort(function(a,b){ return a === 'all' ? -1 : b === 'all' ? 1 : a.localeCompare(b); });
-
-    pillsEl.innerHTML = '';
-    cities.forEach(function(c, i) {
-        var btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = 'city-pill pill-animate flex-shrink-0 rounded-full border border-outline-variant/50 bg-surface-container-low px-4 py-2 font-body text-sm font-medium text-on-surface-variant';
-        btn.style.animationDelay = (i * 35) + 'ms';
-        btn.dataset.city = c;
-        btn.textContent  = c === 'all' ? '🌍  All Cities' : c;
-        btn.setAttribute('role', 'tab');
-        btn.setAttribute('aria-selected', c === cityFilter ? 'true' : 'false');
-        if (c === cityFilter) btn.classList.add('active');
-        btn.addEventListener('click', function() {
-            cityFilter = c;
-            document.querySelectorAll('.city-pill').forEach(function(p){
-                p.classList.toggle('active', p.dataset.city === c);
-                p.setAttribute('aria-selected', p.dataset.city === c ? 'true' : 'false');
+        function pause(ms) {
+            return new Promise(function(r) {
+                setTimeout(r, ms);
             });
-            animateGridChange(function(){ applyFilter(); });
-        });
-        pillsEl.appendChild(btn);
-    });
-}
+        }
 
-/* ═══════════════════════════════════════════════════════════════════════
-   GRID TRANSITION ON FILTER CHANGE
-═══════════════════════════════════════════════════════════════════════ */
-function animateGridChange(callback) {
-    grid.classList.add('grid-fade-out');
-    setTimeout(function() {
-        callback();
-        grid.classList.remove('grid-fade-out');
-        grid.classList.add('grid-fade-in');
-        setTimeout(function(){ grid.classList.remove('grid-fade-in'); }, 350);
-    }, 200);
-}
-
-/* ═══════════════════════════════════════════════════════════════════════
-   APPLY CITY FILTER
-═══════════════════════════════════════════════════════════════════════ */
-function applyFilter() {
-    filtered = cityFilter === 'all'
-        ? hotels.slice()
-        : hotels.filter(function(h){ return cityFromUrl(h.url) === cityFilter; });
-    renderCards(filtered, false);
-}
-
-/* ═══════════════════════════════════════════════════════════════════════
-   RENDER CARDS
-═══════════════════════════════════════════════════════════════════════ */
-function renderCards(list, append) {
-    if (!append) grid.innerHTML = '';
-
-    if (!list.length && !append) {
-        grid.innerHTML =
-            '<div style="grid-column:1/-1;text-align:center;padding:80px 32px;">' +
-                '<span class="material-symbols-outlined" style="font-size:3.5rem;color:#c0c8c3;display:block;margin-bottom:12px;">hotel</span>' +
-                '<p class="font-body text-on-surface-variant">No hotels found for this city.</p>' +
-            '</div>';
-        updateCount();
-        return;
-    }
-
-    var frag = document.createDocumentFragment();
-    list.forEach(function(hotel, idx) {
-        var baseDelay = append ? 0 : idx * 55;
-        var wrap = document.createElement('div');
-        wrap.innerHTML = cardHTML(hotel, baseDelay);
-        var card = wrap.firstElementChild;
-        frag.appendChild(card);
-
-        /* observe address span */
-        var addrEl = card.querySelector('[data-lat]');
-        if (addrEl) addrObserver.observe(addrEl);
-    });
-    grid.appendChild(frag);
-
-    /* wire up heart buttons */
-    bindHeartButtons();
-    updateCount();
-}
-
-/* ═══════════════════════════════════════════════════════════════════════
-   HEART / FAVOURITE TOGGLE
-═══════════════════════════════════════════════════════════════════════ */
-function bindHeartButtons() {
-    document.querySelectorAll('.heart-btn').forEach(function(btn) {
-        if (btn._bound) return;
-        btn._bound = true;
-        btn.addEventListener('click', function(e) {
-            e.preventDefault();
-            var key = btn.dataset.key;
-            favorites[key] = !favorites[key];
-            var svg   = btn.querySelector('svg');
-            var isFav = favorites[key];
-            svg.setAttribute('fill',   isFav ? '#e11d48' : 'none');
-            svg.setAttribute('stroke', isFav ? '#e11d48' : 'currentColor');
-            btn.classList.remove('heart-pop');
-            void btn.offsetWidth; /* reflow to restart animation */
-            btn.classList.add('heart-pop');
-        });
-    });
-}
-
-/* ═══════════════════════════════════════════════════════════════════════
-   FETCH HOTELS FROM LARAVEL PROXY  →  Xotelo /list
-═══════════════════════════════════════════════════════════════════════ */
-function loadHotels(off, srt, append) {
-    if (isBusy) return;
-    isBusy = true;
-    moreBtn.disabled = true;
-
-    if (!append) {
-        showSkeletons(8);
-    } else {
-        moreBtn.innerHTML = '<span class="btn-spinner"></span> Loading…';
-    }
-
-    fetch(API_BASE + '?offset=' + off + '&limit=' + PAGE_SIZE + '&sort=' + srt)
-        .then(function(res) {
-            if (!res.ok) throw new Error('HTTP ' + res.status);
-            return res.json();
-        })
-        .then(function(data) {
-            if (data.error) throw new Error(data.error.message);
-
-            var list  = data.result.list;
-            total     = data.result.total_count;
-            offset    = off + list.length;
-
-            if (append) {
-                hotels   = hotels.concat(list);
-                var newF = cityFilter === 'all'
-                    ? list
-                    : list.filter(function(h){ return cityFromUrl(h.url) === cityFilter; });
-                filtered = filtered.concat(newF);
-                renderCards(newF, true);
-                updateCount();
-            } else {
-                hotels = list;
-                buildPills(list);
-                applyFilter();
+        function cityFromUrl(url) {
+            try {
+                var seg = url.split('/').pop().replace('.html', '').split('-').pop();
+                return seg.split('_')[0];
+            } catch (e) {
+                return 'Morocco';
             }
+        }
 
-            if (offset < total) {
-                moreBtn.classList.remove('hidden');
-                moreBtn.innerHTML  = 'Load More Hotels';
-                pageInfo.textContent = 'Showing ' + Math.min(offset, total).toLocaleString() + ' of ' + total.toLocaleString() + ' hotels';
-            } else {
-                moreBtn.classList.add('hidden');
-                pageInfo.textContent = 'All ' + total.toLocaleString() + ' hotels loaded ✓';
+        function shortLocFromUrl(url) {
+            try {
+                var seg = url.split('/').pop().replace('.html', '').split('-').pop();
+                var words = seg.split('_');
+                return words.length > 1 ? words[0] + ', ' + words.slice(1).join(' ') : words[0];
+            } catch (e) {
+                return 'Morocco';
             }
-        })
-        .catch(function(err) {
-            if (!append) {
-                grid.innerHTML =
-                    '<div style="grid-column:1/-1;border:1.5px solid rgba(186,26,26,0.2);background:rgba(186,26,26,0.05);border-radius:16px;padding:64px 32px;text-align:center;">' +
-                        '<span class="material-symbols-outlined" style="font-size:3.5rem;color:#ba1a1a;display:block;margin-bottom:12px;">warning</span>' +
-                        '<h3 class="font-headline mb-2 text-xl text-on-surface">Could not load hotels</h3>' +
-                        '<p class="font-body mb-8 text-sm text-on-surface-variant">' + esc(err.message) + '</p>' +
-                        '<button onclick="loadHotels(0,sortBy,false)"' +
-                                ' style="background:#00261a;color:#fff;border:none;border-radius:9999px;padding:12px 32px;font-family:inherit;font-size:.875rem;font-weight:700;cursor:pointer;letter-spacing:.05em;text-transform:uppercase;">' +
-                            'Try Again' +
-                        '</button>' +
+        }
+
+        function ratingLabel(r) {
+            if (r >= 9.5) return 'Exceptional';
+            if (r >= 9.0) return 'Wonderful';
+            if (r >= 8.5) return 'Fabulous';
+            if (r >= 8.0) return 'Very Good';
+            if (r >= 7.5) return 'Good';
+            if (r >= 7.0) return 'Pleasant';
+            return 'Reviewed';
+        }
+
+        function ratingBg(r) {
+            if (r >= 9.0) return '#0d3d30';
+            if (r >= 8.5) return '#1a5e47';
+            if (r >= 8.0) return '#0d6e6e';
+            if (r >= 7.0) return '#7a5200';
+            return '#8a7d6b';
+        }
+
+        function typeBadgeBg(type) {
+            var t = (type || '').toLowerCase().replace(/\s+/g, '');
+            if (t.includes('hostel')) return 'rgba(91,33,182,0.82)';
+            if (t.includes('resort')) return 'rgba(184,92,56,0.85)';
+            if (t.includes('guest')) return 'rgba(13,61,48,0.85)';
+            if (t.includes('smallhotel')) return 'rgba(30,58,138,0.82)';
+            return 'rgba(13,61,48,0.85)';
+        }
+
+        function priceStr(p) {
+            return p ? '$' + p.minimum + ' – $' + p.maximum : null;
+        }
+
+        /* Card HTML */
+        function cardHTML(hotel, animDelay) {
+            var cardId = 'card-' + hotel.key.replace(/[^a-z0-9]/gi, '-');
+            var addrId = 'addr-' + cardId;
+            var shortLoc = shortLocFromUrl(hotel.url);
+            var mapsUrl = 'https://maps.google.com/?q=' + hotel.geo.latitude + ',' + hotel.geo.longitude;
+            var price = priceStr(hotel.price_ranges);
+            var rating = hotel.review_summary.rating;
+            var isFav = favorites[hotel.key] ? true : false;
+            var hFill = isFav ? '#e11d48' : 'none';
+            var hStroke = isFav ? '#e11d48' : '#8a7d6b';
+
+            var imgHTML = hotel.image ?
+                '<img src="' + esc(hotel.image) + '" alt="' + esc(hotel.name) + '" loading="lazy" class="card-img" onerror="this.parentElement.innerHTML=\'<div style=\\\"background:#f0ede5;height:100%;display:flex;align-items:center;justify-content:center;font-size:3.5rem;\\\">🏨</div>\'" />' :
+                '<div style="background:#f0ede5;height:100%;display:flex;align-items:center;justify-content:center;font-size:3.5rem;">🏨</div>';
+
+            var labelsHTML = '';
+            (hotel.merchandising_labels || []).forEach(function(l) {
+                labelsHTML += '<span class="card-label">✓ ' + esc(l) + '</span>';
+            });
+
+            return (
+                '<article class="hotel-card card-animate" id="' + cardId + '" role="listitem"' +
+                ' style="animation-delay:' + animDelay + 'ms;">' +
+
+                '<div class="card-img-wrap">' +
+                imgHTML +
+                '<div class="card-img-overlay"></div>' +
+                '<button class="heart-btn" data-key="' + esc(hotel.key) + '" aria-label="Save" type="button">' +
+                '<svg width="16" height="16" viewBox="0 0 24 24" fill="' + hFill + '" stroke="' + hStroke + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+                '<path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>' +
+                '</svg>' +
+                '</button>' +
+                '<span class="type-badge" style="background:' + typeBadgeBg(hotel.accommodation_type) + ';">' +
+                esc(hotel.accommodation_type || 'Hotel') +
+                '</span>' +
+                '<span class="rating-pill">' +
+                '★ ' + rating.toFixed(1) +
+                '</span>' +
+                '</div>' +
+
+                '<div class="card-body">' +
+                '<h3 class="card-name">' + esc(hotel.name) + '</h3>' +
+                '<p class="card-location">' +
+                '<span class="material-symbols-outlined">location_on</span>' +
+                esc(shortLoc) +
+                '</p>' +
+                '<p id="' + addrId + '" class="card-addr" data-lat="' + hotel.geo.latitude + '" data-lon="' + hotel.geo.longitude + '">' +
+                '<span class="addr-spin"></span>Loading…' +
+                '</p>' +
+                '<div class="card-rating-row">' +
+                '<span class="rating-score" style="background:' + ratingBg(rating) + ';">' + rating.toFixed(1) + '</span>' +
+                '<span class="rating-label">' + ratingLabel(rating) + '</span>' +
+                '<span class="rating-count">· ' + hotel.review_summary.count.toLocaleString() + ' reviews</span>' +
+                '</div>' +
+                (labelsHTML ? '<div class="card-labels">' + labelsHTML + '</div>' : '') +
+                '</div>' +
+
+                '<div class="card-footer">' +
+                '<a href="' + esc(mapsUrl) + '" target="_blank" rel="noopener" class="card-map-link">' +
+                '<span class="material-symbols-outlined">map</span>Map' +
+                '</a>' +
+                (price ? '<span class="card-price">' + esc(price) + ' <small>/night</small></span>' : '<span></span>') +
+                '<a href="' + esc(hotel.url) + '" target="_blank" rel="noopener" class="card-cta">View ↗</a>' +
+                '</div>' +
+
+                '</article>'
+            );
+        }
+
+        /* Skeletons */
+        function showSkeletons(n) {
+            var sk = '';
+            for (var i = 0; i < n; i++) {
+                sk +=
+                    '<div class="sk-card">' +
+                    '<div class="sk" style="height:200px;border-radius:0;"></div>' +
+                    '<div style="padding:1rem 1.1rem;display:flex;flex-direction:column;gap:9px;">' +
+                    '<div class="sk" style="height:18px;width:82%;"></div>' +
+                    '<div class="sk" style="height:12px;width:50%;"></div>' +
+                    '<div class="sk" style="height:10px;width:68%;"></div>' +
+                    '<div style="display:flex;gap:8px;align-items:center;">' +
+                    '<div class="sk" style="height:24px;width:36px;border-radius:8px;"></div>' +
+                    '<div class="sk" style="height:12px;width:55%;"></div>' +
+                    '</div>' +
+                    '</div>' +
+                    '<div style="border-top:1px solid rgba(196,154,60,0.08);padding:0.7rem 1.1rem;display:flex;justify-content:space-between;gap:8px;">' +
+                    '<div class="sk" style="height:22px;width:40px;border-radius:20px;"></div>' +
+                    '<div class="sk" style="height:22px;width:70px;border-radius:20px;"></div>' +
+                    '<div class="sk" style="height:22px;width:52px;border-radius:20px;"></div>' +
+                    '</div>' +
                     '</div>';
             }
-            console.error('[Hotels]', err);
-        })
-        .finally(function() {
-            isBusy            = false;
-            moreBtn.disabled  = false;
-            moreBtn.innerHTML = 'Load More Hotels';
+            grid.innerHTML = sk;
+        }
+
+        /* Count */
+        function updateCount() {
+            countEl.innerHTML = '';
+            var span = document.createElement('span');
+            span.className = 'count-animate';
+            span.innerHTML = 'Showing <strong>' + filtered.length + '</strong> of <strong>' + total.toLocaleString() + '</strong> hotels';
+            countEl.appendChild(span);
+        }
+
+        /* City pills */
+        function buildPills(list) {
+            var seen = {},
+                cities = ['all'];
+            list.forEach(function(h) {
+                var c = cityFromUrl(h.url);
+                if (!seen[c]) {
+                    seen[c] = true;
+                    cities.push(c);
+                }
+            });
+            cities.sort(function(a, b) {
+                return a === 'all' ? -1 : b === 'all' ? 1 : a.localeCompare(b);
+            });
+            pillsEl.innerHTML = '';
+            cities.forEach(function(c, i) {
+                var btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'city-pill pill-animate';
+                btn.style.animationDelay = (i * 40) + 'ms';
+                btn.dataset.city = c;
+                btn.textContent = c === 'all' ? '✦  All Cities' : c;
+                btn.setAttribute('role', 'tab');
+                btn.setAttribute('aria-selected', c === cityFilter ? 'true' : 'false');
+                if (c === cityFilter) btn.classList.add('active');
+                btn.addEventListener('click', function() {
+                    cityFilter = c;
+                    document.querySelectorAll('.city-pill').forEach(function(p) {
+                        p.classList.toggle('active', p.dataset.city === c);
+                        p.setAttribute('aria-selected', p.dataset.city === c ? 'true' : 'false');
+                    });
+                    animateGridChange(function() {
+                        applyFilter();
+                    });
+                });
+                pillsEl.appendChild(btn);
+            });
+        }
+
+        /* Grid transition */
+        function animateGridChange(cb) {
+            grid.classList.add('grid-fade-out');
+            setTimeout(function() {
+                cb();
+                grid.classList.remove('grid-fade-out');
+                grid.classList.add('grid-fade-in');
+                setTimeout(function() {
+                    grid.classList.remove('grid-fade-in');
+                }, 350);
+            }, 200);
+        }
+
+        /* Filter */
+        function applyFilter() {
+            filtered = cityFilter === 'all' ?
+                hotels.slice() :
+                hotels.filter(function(h) {
+                    return cityFromUrl(h.url) === cityFilter;
+                });
+            renderCards(filtered, false);
+        }
+
+        /* Render */
+        function renderCards(list, append) {
+            if (!append) grid.innerHTML = '';
+            if (!list.length && !append) {
+                grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:6rem 2rem;">' +
+                    '<span class="material-symbols-outlined" style="font-size:4rem;color:#d5ccc0;display:block;margin-bottom:1rem;">hotel</span>' +
+                    '<p style="color:var(--muted);font-size:0.9rem;">No hotels found for this city.</p>' +
+                    '</div>';
+                updateCount();
+                return;
+            }
+            var frag = document.createDocumentFragment();
+            list.forEach(function(hotel, idx) {
+                var wrap = document.createElement('div');
+                wrap.innerHTML = cardHTML(hotel, append ? 0 : idx * 60);
+                var card = wrap.firstElementChild;
+                frag.appendChild(card);
+                var addrEl = card.querySelector('[data-lat]');
+                if (addrEl) addrObserver.observe(addrEl);
+            });
+            grid.appendChild(frag);
+            bindHeartButtons();
+            updateCount();
+        }
+
+        /* Hearts */
+        function bindHeartButtons() {
+            document.querySelectorAll('.heart-btn').forEach(function(btn) {
+                if (btn._bound) return;
+                btn._bound = true;
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    var key = btn.dataset.key;
+                    favorites[key] = !favorites[key];
+                    var svg = btn.querySelector('svg'),
+                        isFav = favorites[key];
+                    svg.setAttribute('fill', isFav ? '#e11d48' : 'none');
+                    svg.setAttribute('stroke', isFav ? '#e11d48' : '#8a7d6b');
+                    btn.classList.remove('heart-pop');
+                    void btn.offsetWidth;
+                    btn.classList.add('heart-pop');
+                });
+            });
+        }
+
+        /* Fetch */
+        function loadHotels(off, srt, append) {
+            if (isBusy) return;
+            isBusy = true;
+            moreBtn.disabled = true;
+            if (!append) {
+                showSkeletons(9);
+            } else {
+                moreBtn.innerHTML = '<span class="btn-spinner"></span> Loading…';
+            }
+
+            fetch(API_BASE + '?offset=' + off + '&limit=' + PAGE_SIZE + '&sort=' + srt)
+                .then(function(res) {
+                    if (!res.ok) throw new Error('HTTP ' + res.status);
+                    return res.json();
+                })
+                .then(function(data) {
+                    if (data.error) throw new Error(data.error.message);
+                    var list = data.result.list;
+                    total = data.result.total_count;
+                    offset = off + list.length;
+                    if (append) {
+                        hotels = hotels.concat(list);
+                        var newF = cityFilter === 'all' ? list : list.filter(function(h) {
+                            return cityFromUrl(h.url) === cityFilter;
+                        });
+                        filtered = filtered.concat(newF);
+                        renderCards(newF, true);
+                        updateCount();
+                    } else {
+                        hotels = list;
+                        buildPills(list);
+                        applyFilter();
+                    }
+                    if (offset < total) {
+                        moreBtn.classList.remove('hidden');
+                        moreBtn.innerHTML = 'Discover More Hotels';
+                        pageInfo.textContent = 'Showing ' + Math.min(offset, total).toLocaleString() + ' of ' + total.toLocaleString() + ' hotels';
+                    } else {
+                        moreBtn.classList.add('hidden');
+                        pageInfo.textContent = 'All ' + total.toLocaleString() + ' hotels displayed ✦';
+                    }
+                })
+                .catch(function(err) {
+                    if (!append) {
+                        grid.innerHTML =
+                            '<div style="grid-column:1/-1;border:1px solid rgba(184,92,56,0.2);background:rgba(184,92,56,0.04);border-radius:16px;padding:5rem 2rem;text-align:center;">' +
+                            '<span class="material-symbols-outlined" style="font-size:3.5rem;color:#b85c38;display:block;margin-bottom:1rem;">warning</span>' +
+                            '<h3 style="font-family:Cormorant Garamond,serif;font-size:1.5rem;margin-bottom:0.5rem;">Could not load hotels</h3>' +
+                            '<p style="color:var(--muted);font-size:0.85rem;margin-bottom:2rem;">' + esc(err.message) + '</p>' +
+                            '<button onclick="loadHotels(0,sortBy,false)" style="background:var(--teal-dark);color:#fff;border:none;border-radius:100px;padding:0.75rem 2rem;font-size:0.75rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;">Try Again</button>' +
+                            '</div>';
+                    }
+                    console.error('[Hotels]', err);
+                })
+                .finally(function() {
+                    isBusy = false;
+                    moreBtn.disabled = false;
+                    moreBtn.innerHTML = 'Discover More Hotels';
+                });
+        }
+
+        /* Nominatim */
+        function drainAddrQueue() {
+            if (queueBusy || addrQueue.length === 0) return;
+            queueBusy = true;
+            (function next() {
+                if (addrQueue.length === 0) {
+                    queueBusy = false;
+                    return;
+                }
+                var item = addrQueue.shift();
+                var cacheKey = item.lat + ',' + item.lon;
+                var el = document.getElementById(item.elId);
+                if (!el) {
+                    next();
+                    return;
+                }
+                if (addrCache[cacheKey]) {
+                    el.textContent = addrCache[cacheKey];
+                    next();
+                    return;
+                }
+                fetch('https://nominatim.openstreetmap.org/reverse?lat=' + item.lat + '&lon=' + item.lon + '&format=json&zoom=18&addressdetails=1', {
+                        headers: {
+                            'Accept-Language': 'en-US,en'
+                        }
+                    })
+                    .then(function(r) {
+                        return r.json();
+                    })
+                    .then(function(d) {
+                        var a = d.address || {};
+                        var road = a.road || a.pedestrian || a.footway || a.neighbourhood || a.suburb || '';
+                        var num = a.house_number || '';
+                        var addr = [num, road].filter(Boolean).join(' ') || (d.display_name || '').split(',')[0] || 'Address unavailable';
+                        addrCache[cacheKey] = addr;
+                        var el2 = document.getElementById(item.elId);
+                        if (el2) el2.textContent = addr;
+                    })
+                    .catch(function() {
+                        var el2 = document.getElementById(item.elId);
+                        if (el2) el2.textContent = 'Address unavailable';
+                    })
+                    .finally(function() {
+                        setTimeout(next, 1150);
+                    });
+            })();
+        }
+
+        var addrObserver = new IntersectionObserver(function(entries) {
+            entries.forEach(function(e) {
+                if (e.isIntersecting) {
+                    var el = e.target;
+                    addrObserver.unobserve(el);
+                    addrQueue.push({
+                        lat: el.dataset.lat,
+                        lon: el.dataset.lon,
+                        elId: el.id
+                    });
+                    drainAddrQueue();
+                }
+            });
+        }, {
+            rootMargin: '120px'
         });
-}
 
-/* ═══════════════════════════════════════════════════════════════════════
-   NOMINATIM REVERSE-GEOCODING  (queue, 1 req/s, lazy via IntersectionObserver)
-═══════════════════════════════════════════════════════════════════════ */
-function drainAddrQueue() {
-    if (queueBusy || addrQueue.length === 0) return;
-    queueBusy = true;
+        /* Events */
+        sortEl.addEventListener('change', function() {
+            sortBy = sortEl.value;
+            offset = 0;
+            hotels = [];
+            filtered = [];
+            animateGridChange(function() {
+                loadHotels(0, sortBy, false);
+            });
+        });
+        moreBtn.addEventListener('click', function() {
+            loadHotels(offset, sortBy, true);
+        });
 
-    (function next() {
-        if (addrQueue.length === 0) { queueBusy = false; return; }
-        var item     = addrQueue.shift();
-        var cacheKey = item.lat + ',' + item.lon;
-        var el       = document.getElementById(item.elId);
-        if (!el) { next(); return; }
-
-        if (addrCache[cacheKey]) {
-            el.textContent = addrCache[cacheKey];
-            next();
-            return;
-        }
-
-        fetch(
-            'https://nominatim.openstreetmap.org/reverse?lat=' + item.lat +
-            '&lon=' + item.lon + '&format=json&zoom=18&addressdetails=1',
-            { headers: { 'Accept-Language': 'en-US,en' } }
-        )
-        .then(function(r){ return r.json(); })
-        .then(function(d) {
-            var a    = d.address || {};
-            var road = a.road || a.pedestrian || a.footway || a.path || a.neighbourhood || a.suburb || '';
-            var num  = a.house_number || '';
-            var addr = [num, road].filter(Boolean).join(' ')
-                    || (d.display_name || '').split(',')[0]
-                    || 'Address unavailable';
-            addrCache[cacheKey] = addr;
-            var el2 = document.getElementById(item.elId);
-            if (el2) el2.textContent = addr;
-        })
-        .catch(function() {
-            var el2 = document.getElementById(item.elId);
-            if (el2) el2.textContent = 'Address unavailable';
-        })
-        .finally(function() { setTimeout(next, 1150); });
-    })();
-}
-
-var addrObserver = new IntersectionObserver(function(entries) {
-    entries.forEach(function(e) {
-        if (e.isIntersecting) {
-            var el = e.target;
-            addrObserver.unobserve(el);
-            addrQueue.push({ lat: el.dataset.lat, lon: el.dataset.lon, elId: el.id });
-            drainAddrQueue();
-        }
-    });
-}, { rootMargin: '120px' });
-
-/* ═══════════════════════════════════════════════════════════════════════
-   EVENTS
-═══════════════════════════════════════════════════════════════════════ */
-sortEl.addEventListener('change', function() {
-    sortBy   = sortEl.value;
-    offset   = 0;
-    hotels   = [];
-    filtered = [];
-    animateGridChange(function() { loadHotels(0, sortBy, false); });
-});
-
-moreBtn.addEventListener('click', function() {
-    loadHotels(offset, sortBy, true);
-});
-
-/* ═══════════════════════════════════════════════════════════════════════
-   INIT
-═══════════════════════════════════════════════════════════════════════ */
-loadHotels(0, sortBy, false);
-</script>
+        /* Init */
+        loadHotels(0, sortBy, false);
+    </script>
 </body>
+
 </html>
