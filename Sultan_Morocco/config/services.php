@@ -35,4 +35,13 @@ return [
         ],
     ],
 
+    /*
+    | Xotelo hotel list API (proxied by App\Http\Controllers\HotelController).
+    | Set XOTELO_LOCATION_KEY in .env — do not commit real values to the repo.
+    */
+    'xotelo' => [
+        'base_url' => env('XOTELO_BASE_URL', 'https://data.xotelo.com/api'),
+        'location_key' => env('XOTELO_LOCATION_KEY'),
+    ],
+
 ];
