@@ -1,4 +1,4 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 
 /* Manual dark mode: class + data-theme on <html> (both wired in theme-init / theme.js) */
 @custom-variant dark (&:where(.dark, .dark *, [data-theme='dark'], [data-theme='dark'] *));
@@ -9,10 +9,12 @@
 @source '../**/*.js';
 
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
-    --font-headline: 'Noto Serif', ui-serif, Georgia, 'Times New Roman', serif;
-    --font-body: 'Inter', ui-sans-serif, system-ui, sans-serif;
+    --font-sans:
+        "Instrument Sans", ui-sans-serif, system-ui, sans-serif,
+        "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
+        "Noto Color Emoji";
+    --font-headline: "Noto Serif", ui-serif, Georgia, "Times New Roman", serif;
+    --font-body: "Inter", ui-sans-serif, system-ui, sans-serif;
 
     /* Sultan heritage palette (Material-style) */
     --color-background: #fcf9f4;
@@ -64,6 +66,45 @@
     --color-surface-tint: #3b6756;
 }
 
+/* ── Dark-mode token overrides ──────────────────────────────────────────── */
+/* These flip all token-based Tailwind classes (bg-surface, text-on-surface, */
+/* bg-surface-container-low, etc.) automatically when .dark is on <html>.    */
+.dark {
+    --color-background: #09090b;
+    --color-on-background: #f4f4f5;
+    --color-surface: #18181b;
+    --color-surface-dim: #09090b;
+    --color-surface-bright: #2d2d30;
+    --color-surface-container: #1e1e21;
+    --color-surface-container-low: #1a1a1d;
+    --color-surface-container-high: #27272a;
+    --color-surface-container-highest: #313134;
+    --color-surface-container-lowest: #0f0f12;
+    --color-on-surface: #f4f4f5;
+    --color-on-surface-variant: #a1a1aa;
+    --color-surface-variant: #27272a;
+    --color-outline: #52525b;
+    --color-outline-variant: #3f3f46;
+    --color-primary: #6ee7b7;
+    --color-on-primary: #022c1a;
+    --color-primary-container: #064e35;
+    --color-on-primary-container: #a7f3d0;
+    --color-secondary: #fcd34d;
+    --color-on-secondary: #2c1a00;
+    --color-secondary-container: #78350f;
+    --color-on-secondary-container: #fde68a;
+    --color-on-secondary-fixed: #2c1a00;
+    --color-tertiary: #fb923c;
+    --color-on-tertiary: #341200;
+    --color-tertiary-container: #7c2d12;
+    --color-on-tertiary-container: #fed7aa;
+    --color-tertiary-fixed-dim: #fdba74;
+    --color-on-tertiary-fixed-variant: #9a3412;
+    --color-inverse-surface: #e4e4e7;
+    --color-inverse-on-surface: #27272a;
+    --color-surface-tint: #6ee7b7;
+}
+
 @layer base {
     html {
         scroll-behavior: smooth;
@@ -82,9 +123,21 @@
         content: "";
         @apply pointer-events-none absolute inset-0 opacity-60;
         background:
-            radial-gradient(900px circle at 18% 22%, color-mix(in oklab, rgb(34 211 238) 20%, transparent) 0%, transparent 55%),
-            radial-gradient(850px circle at 82% 16%, color-mix(in oklab, rgb(168 85 247) 22%, transparent) 0%, transparent 52%),
-            radial-gradient(950px circle at 65% 85%, color-mix(in oklab, rgb(16 185 129) 18%, transparent) 0%, transparent 60%);
+            radial-gradient(
+                900px circle at 18% 22%,
+                color-mix(in oklab, rgb(34 211 238) 20%, transparent) 0%,
+                transparent 55%
+            ),
+            radial-gradient(
+                850px circle at 82% 16%,
+                color-mix(in oklab, rgb(168 85 247) 22%, transparent) 0%,
+                transparent 52%
+            ),
+            radial-gradient(
+                950px circle at 65% 85%,
+                color-mix(in oklab, rgb(16 185 129) 18%, transparent) 0%,
+                transparent 60%
+            );
         filter: blur(10px) saturate(1.1);
         transform: translate3d(0, 0, 0);
     }
@@ -93,10 +146,22 @@
         content: "";
         @apply pointer-events-none absolute inset-0 opacity-[0.12];
         background-image:
-            linear-gradient(to right, rgba(255, 255, 255, 0.06) 1px, transparent 1px),
-            linear-gradient(to bottom, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+            linear-gradient(
+                to right,
+                rgba(255, 255, 255, 0.06) 1px,
+                transparent 1px
+            ),
+            linear-gradient(
+                to bottom,
+                rgba(255, 255, 255, 0.06) 1px,
+                transparent 1px
+            );
         background-size: 48px 48px;
-        mask-image: radial-gradient(circle at 50% 20%, black 0%, transparent 62%);
+        mask-image: radial-gradient(
+            circle at 50% 20%,
+            black 0%,
+            transparent 62%
+        );
     }
 
     .noise {
@@ -105,8 +170,7 @@
     .noise::before {
         content: "";
         @apply pointer-events-none absolute inset-0 opacity-[0.08] mix-blend-overlay;
-        background-image:
-            url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='.45'/%3E%3C/svg%3E");
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='.45'/%3E%3C/svg%3E");
     }
 
     .glass {
@@ -320,7 +384,7 @@
     }
 
     .material-symbols-outlined {
-        font-family: 'Material Symbols Outlined', sans-serif;
+        font-family: "Material Symbols Outlined", sans-serif;
         font-weight: 300;
         font-style: normal;
         font-size: 24px;
@@ -331,9 +395,13 @@
         white-space: nowrap;
         word-wrap: normal;
         direction: ltr;
-        font-feature-settings: 'liga';
+        font-feature-settings: "liga";
         -webkit-font-smoothing: antialiased;
-        font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        font-variation-settings:
+            "FILL" 0,
+            "wght" 300,
+            "GRAD" 0,
+            "opsz" 24;
     }
 
     .no-scrollbar::-webkit-scrollbar {
@@ -562,15 +630,18 @@
         transition-property: transform, opacity, margin, background-color;
     }
 
-    .nav-master__burger[aria-expanded="true"] .nav-master__burger-line:nth-child(1) {
+    .nav-master__burger[aria-expanded="true"]
+        .nav-master__burger-line:nth-child(1) {
         @apply translate-y-[7px] rotate-45;
     }
 
-    .nav-master__burger[aria-expanded="true"] .nav-master__burger-line:nth-child(2) {
+    .nav-master__burger[aria-expanded="true"]
+        .nav-master__burger-line:nth-child(2) {
         @apply opacity-0;
     }
 
-    .nav-master__burger[aria-expanded="true"] .nav-master__burger-line:nth-child(3) {
+    .nav-master__burger[aria-expanded="true"]
+        .nav-master__burger-line:nth-child(3) {
         @apply -translate-y-[7px] -rotate-45;
     }
 

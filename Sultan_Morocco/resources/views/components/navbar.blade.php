@@ -21,6 +21,11 @@
             'label' => 'Hotels',
             'active' => request()->routeIs('hotels.index'),
         ],
+        [
+            'url' => route('restaurants.index'),
+            'label' => 'Restaurants',
+            'active' => request()->routeIs('restaurants.index'),
+        ],
     ];
 
     $linkBase = 'nav-master__link rounded-xl';

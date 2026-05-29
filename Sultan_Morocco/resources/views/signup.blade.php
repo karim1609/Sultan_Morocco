@@ -79,7 +79,7 @@
         .delay-400 { animation-delay: 400ms; }
         .delay-500 { animation-delay: 500ms; }
         .delay-600 { animation-delay: 600ms; }
-        
+
         /* Subtle input focus pulse */
         input:focus {
             box-shadow: 0 0 0 4px rgba(33, 160, 93, 0.15);
@@ -111,6 +111,11 @@
             fill: #2a2620;
             opacity: 0.35;
         }
+        html.dark .divider-label { background-color: #171512 !important; }
+        html.dark .social-btn { color: #f4f1eb !important; }
+        html.dark footer.auth-footer a { color: #71717a; }
+        html.dark .signup-bottom { background-color: #171512 !important; }
+        html.dark .signup-bottom p { color: #a1a1aa !important; }
     </style>
 </head>
 <body class="bg-custom-gray text-[#1B1B18] min-h-screen flex flex-col items-center justify-center relative overflow-hidden py-10 transition-colors duration-200">
@@ -221,11 +226,11 @@
 
         <div class="mt-8 flex items-center justify-center relative slide-up delay-600">
             <hr class="w-full border-gray-100">
-            <span class="absolute px-4 bg-white text-[10px] uppercase tracking-widest text-gray-400 font-semibold">Or sign up with</span>
+            <span class="divider-label absolute px-4 bg-white text-[10px] uppercase tracking-widest text-gray-400 font-semibold">Or sign up with</span>
         </div>
 
         <div class="mt-8 flex gap-4 slide-up delay-600">
-            <button class="flex-1 flex items-center justify-center gap-2 h-[48px] bg-input hover:bg-gray-200 active:bg-gray-300 rounded-[28px] text-sm font-semibold text-gray-700 hover:-translate-y-1 hover:shadow-md transition-all duration-300">
+            <button class="social-btn flex-1 flex items-center justify-center gap-2 h-[48px] bg-input hover:bg-gray-200 active:bg-gray-300 rounded-[28px] text-sm font-semibold text-gray-700 hover:-translate-y-1 hover:shadow-md transition-all duration-300">
                 <!-- Google Icon -->
                 <svg viewBox="0 0 24 24" width="18" height="18" xmlns="http://www.w3.org/2000/svg">
                     <g transform="matrix(1, 0, 0, 1, 0, 0)">
@@ -237,7 +242,7 @@
                 </svg>
                 Google
             </button>
-            <button class="flex-1 flex items-center justify-center gap-2 h-[48px] bg-input hover:bg-gray-200 active:bg-gray-300 rounded-[28px] text-sm font-semibold text-gray-700 hover:-translate-y-1 hover:shadow-md transition-all duration-300">
+            <button class="social-btn flex-1 flex items-center justify-center gap-2 h-[48px] bg-input hover:bg-gray-200 active:bg-gray-300 rounded-[28px] text-sm font-semibold text-gray-700 hover:-translate-y-1 hover:shadow-md transition-all duration-300">
                 <!-- Facebook Icon -->
                 <svg viewBox="0 0 24 24" width="18" height="18" xmlns="http://www.w3.org/2000/svg" fill="#1877F2">
                     <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.469h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
@@ -245,10 +250,10 @@
                 Facebook
             </button>
         </div>
-        
+
     </main>
-    
-    <div class="bg-[#F8F6F4] -mt-8 pt-12 pb-6 px-10 rounded-b-[3rem] w-full max-w-[460px] text-center shadow-[0_10px_30px_rgba(0,0,0,0.03)] relative z-0 slide-up delay-600">
+
+    <div class="signup-bottom bg-[#F8F6F4] -mt-8 pt-12 pb-6 px-10 rounded-b-[3rem] w-full max-w-[460px] text-center shadow-[0_10px_30px_rgba(0,0,0,0.03)] relative z-0 slide-up delay-600">
         <p class="text-sm text-gray-600">
             Already have an account? <a href="{{ route('login') }}" class="text-green-dark font-bold hover:underline">Login</a>
         </p>
@@ -256,14 +261,14 @@
 
     <!-- Footer Links -->
     <div class="mt-6 flex flex-col items-center gap-6 z-10 w-full">
-        <footer class="flex gap-6 text-[10px] font-semibold uppercase tracking-[0.2em] text-[#A0A09A]">
+        <footer class="auth-footer flex gap-6 text-[10px] font-semibold uppercase tracking-[0.2em] text-[#A0A09A]">
             <a href="#" class="hover:text-green-dark transition-colors">Privacy</a>
             <span>•</span>
             <a href="#" class="hover:text-green-dark transition-colors">Terms</a>
             <span>•</span>
             <a href="#" class="hover:text-green-dark transition-colors">Contact</a>
         </footer>
-        
+
         <p class="text-[9px] uppercase tracking-wider text-gray-400 font-semibold opacity-70">
             © 2024 Sultan Morocco. The Digital Curator.
         </p>

@@ -16,8 +16,35 @@
             rel="stylesheet"
         />
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+        <style>
+/* ===== DARK MODE OVERRIDES for welcome.blade.php ===== */
+html.dark body { background-color: #09090b !important; color: #f4f4f5; }
+
+/* Navigation */
+html.dark nav.fixed { background-color: rgba(9,9,11,0.85) !important; border-bottom: 1px solid rgba(255,255,255,0.08); }
+
+/* Search bar */
+html.dark .search-bar-wrap { background-color: rgba(24,24,27,0.97) !important; box-shadow: 0 25px 50px rgba(0,0,0,0.5); }
+html.dark .search-bar-wrap input,
+html.dark .search-bar-wrap select { color: #f4f4f5 !important; }
+
+/* Section backgrounds */
+html.dark section#categories { background-color: #18181b !important; }
+
+/* Cards with token-based backgrounds */
+html.dark .category-card-item { background-color: #27272a !important; }
+html.dark .category-card-item:hover { background-color: #ffd57a22 !important; }
+html.dark .popular-card-item { background-color: #1c1c1e !important; }
+html.dark .why-icon-circle { background-color: #27272a !important; }
+html.dark .testimonial-box { background-color: #18181b !important; }
+html.dark .map-thumbnail-box { background-color: #27272a !important; }
+
+/* Token text colors */
+html.dark .dark-text-primary { color: #f4f4f5 !important; }
+html.dark .dark-text-secondary { color: #a1a1aa !important; }
+        </style>
     </head>
-    <body class="bg-background font-body text-on-background selection:bg-secondary-container selection:text-on-secondary-container">
+    <body class="bg-background font-body text-on-background selection:bg-secondary-container selection:text-on-secondary-container dark:bg-zinc-950 dark:text-zinc-100">
         @if (session('success'))
             <div
                 class="fixed left-1/2 top-20 z-[60] max-w-lg -translate-x-1/2 rounded-full border border-outline-variant/50 bg-surface-container-lowest/95 px-5 py-2.5 text-center text-sm font-medium text-primary shadow-lg backdrop-blur-md"
@@ -131,19 +158,19 @@
                     Hidden gems, luxury stays, and unforgettable experiences curated for the modern traveler.
                 </p>
                 <div
-                    class="mx-auto flex max-w-5xl flex-col items-center gap-3 rounded-full bg-surface-container-lowest/95 p-3 shadow-2xl backdrop-blur-sm md:flex-row md:p-4"
+                    class="search-bar-wrap mx-auto flex max-w-5xl flex-col items-center gap-3 rounded-full bg-surface-container-lowest/95 p-3 shadow-2xl backdrop-blur-sm md:flex-row md:p-4 dark:bg-zinc-900/97 dark:shadow-[0_25px_50px_rgba(0,0,0,0.5)]"
                 >
                     <div class="flex w-full items-center gap-3 border-outline-variant/30 px-6 py-2 md:border-b-0 md:border-r">
                         <span class="material-symbols-outlined text-secondary">location_on</span>
                         <input
-                            class="font-body w-full border-none bg-transparent text-on-surface placeholder:text-on-surface-variant/60 focus:ring-0"
+                            class="font-body w-full border-none bg-transparent text-on-surface placeholder:text-on-surface-variant/60 focus:ring-0 dark:text-zinc-100"
                             type="text"
                             placeholder="Where to?"
                         />
                     </div>
                     <div class="flex w-full items-center gap-3 border-outline-variant/30 px-6 py-2 md:border-b-0 md:border-r">
                         <span class="material-symbols-outlined text-secondary">category</span>
-                        <select class="font-body w-full cursor-pointer border-none bg-transparent text-on-surface focus:ring-0">
+                        <select class="font-body w-full cursor-pointer border-none bg-transparent text-on-surface focus:ring-0 dark:text-zinc-100">
                             <option>All Categories</option>
                             <option>Luxury Riads</option>
                             <option>Desert Camps</option>
@@ -152,7 +179,7 @@
                     </div>
                     <div class="flex w-full items-center gap-3 px-6 py-2">
                         <span class="material-symbols-outlined text-secondary">payments</span>
-                        <select class="font-body w-full cursor-pointer border-none bg-transparent text-on-surface focus:ring-0">
+                        <select class="font-body w-full cursor-pointer border-none bg-transparent text-on-surface focus:ring-0 dark:text-zinc-100">
                             <option>Price Range</option>
                             <option>$ - Budget</option>
                             <option>$$ - Moderate</option>
@@ -236,7 +263,7 @@
             </section>
 
             {{-- Categories --}}
-            <section id="categories" class="bg-surface-container-low py-24">
+            <section id="categories" class="bg-surface-container-low py-24 dark:bg-zinc-900">
                 <div class="mx-auto max-w-7xl px-8">
                     <div class="mb-16 text-center">
                         <h2 class="font-headline mb-4 text-4xl text-on-surface">Explore by Category</h2>
@@ -256,10 +283,10 @@
                             ] as $cat
                         )
                             <div
-                                class="group flex aspect-square w-48 shrink-0 snap-center cursor-pointer flex-col items-center justify-center gap-4 rounded-xl bg-surface-container-lowest shadow-sm transition-colors hover:bg-secondary-container"
+                                class="category-card-item group flex aspect-square w-48 shrink-0 snap-center cursor-pointer flex-col items-center justify-center gap-4 rounded-xl bg-surface-container-lowest shadow-sm transition-colors hover:bg-secondary-container dark:bg-zinc-800 dark:hover:bg-amber-500/20"
                             >
                                 <span class="material-symbols-outlined text-4xl text-primary group-hover:text-on-secondary-container">{{ $cat['icon'] }}</span>
-                                <span class="font-body text-sm font-bold uppercase tracking-wider group-hover:text-on-secondary-container">{{ $cat['label'] }}</span>
+                                <span class="font-body text-sm font-bold uppercase tracking-wider group-hover:text-on-secondary-container dark:text-zinc-100 dark:group-hover:text-amber-200">{{ $cat['label'] }}</span>
                             </div>
                         @endforeach
                     </div>
@@ -269,9 +296,9 @@
             {{-- Popular places --}}
             <section class="mx-auto max-w-7xl px-8">
                 <div class="mb-12 flex items-center gap-4">
-                    <h2 class="font-headline text-4xl text-on-surface">Popular Right Now</h2>
+                    <h2 class="font-headline text-4xl text-on-surface dark:text-white">Popular Right Now</h2>
                     <span
-                        class="flex items-center gap-2 rounded-full bg-tertiary-container px-4 py-1 text-xs font-bold uppercase tracking-widest text-on-tertiary-container"
+                        class="flex items-center gap-2 rounded-full bg-tertiary-container px-4 py-1 text-xs font-bold uppercase tracking-widest text-on-tertiary-container dark:bg-orange-900/30 dark:text-orange-300"
                     >
                         <span class="relative flex h-2 w-2">
                             <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-on-tertiary-container opacity-75"></span>
@@ -309,7 +336,7 @@
                             ],
                         ] as $place
                     )
-                        <div class="group min-w-[350px] overflow-hidden rounded-xl bg-surface-container-lowest transition-all duration-500 hover:shadow-2xl">
+                        <div class="popular-card-item group min-w-[350px] overflow-hidden rounded-xl bg-surface-container-lowest transition-all duration-500 hover:shadow-2xl dark:bg-zinc-800">
                             <div class="relative h-64">
                                 <img class="h-full w-full object-cover" src="{{ $place['img'] }}" alt="{{ $place['alt'] }}" loading="lazy" />
                                 <button
@@ -323,8 +350,8 @@
                             <div class="p-8">
                                 <div class="mb-4 flex items-start justify-between">
                                     <div>
-                                        <h3 class="font-headline mb-1 text-2xl text-on-surface">{{ $place['title'] }}</h3>
-                                        <div class="flex items-center gap-2 text-sm text-on-surface-variant">
+                                        <h3 class="font-headline mb-1 text-2xl text-on-surface dark:text-white">{{ $place['title'] }}</h3>
+                                        <div class="flex items-center gap-2 text-sm text-on-surface-variant dark:text-zinc-400">
                                             <span class="material-symbols-outlined text-sm">location_on</span>
                                             {{ $place['loc'] }}
                                         </div>
@@ -347,8 +374,8 @@
             <section id="map" class="mx-auto max-w-7xl px-8">
                 <div class="grid grid-cols-1 items-center gap-16 lg:grid-cols-12">
                     <div class="lg:col-span-4">
-                        <h2 class="font-headline mb-6 text-4xl text-on-surface">Explore on the Map</h2>
-                        <p class="mb-8 leading-relaxed text-on-surface-variant">
+                        <h2 class="font-headline mb-6 text-4xl text-on-surface dark:text-white">Explore on the Map</h2>
+                        <p class="mb-8 leading-relaxed text-on-surface-variant dark:text-zinc-400">
                             Find luxury stays and fine dining near you. Use our interactive map to discover hidden riads and artisan shops that do not appear in every guidebook.
                         </p>
                         <button
@@ -359,7 +386,7 @@
                             Open Full Map
                         </button>
                     </div>
-                    <div class="group relative h-[500px] overflow-hidden rounded-[3rem] bg-surface-container-highest shadow-lg lg:col-span-8">
+                    <div class="map-thumbnail-box group relative h-[500px] overflow-hidden rounded-[3rem] bg-surface-container-highest shadow-lg lg:col-span-8 dark:bg-zinc-800">
                         <div
                             class="absolute inset-0 opacity-70 contrast-125 grayscale transition-all duration-1000 group-hover:opacity-100 group-hover:grayscale-0"
                         >
@@ -390,7 +417,7 @@
                 <div class="mx-auto max-w-7xl px-8">
                     <div class="mb-20 text-center lg:text-left">
                         <h2 class="font-headline mb-6 text-4xl md:text-5xl">Unique Experiences</h2>
-                        <p class="max-w-2xl text-lg font-light text-on-primary-container">
+                        <p class="max-w-2xl text-lg font-light text-on-primary-container dark:text-emerald-200">
                             Go beyond sightseeing with curated moments designed by local heritage experts.
                         </p>
                     </div>
@@ -438,7 +465,7 @@
                                 </div>
                                 <div>
                                     <h4 class="font-headline mb-2 text-2xl">{{ $exp['title'] }}</h4>
-                                    <p class="text-sm leading-relaxed text-on-primary-container">{{ $exp['desc'] }}</p>
+                                    <p class="text-sm leading-relaxed text-on-primary-container dark:text-emerald-200">{{ $exp['desc'] }}</p>
                                 </div>
                             </div>
                         @endforeach
@@ -450,7 +477,7 @@
             <section class="mx-auto max-w-7xl px-8">
                 <div class="mb-20 text-center">
                     <span class="mb-4 block font-body text-xs font-bold uppercase tracking-widest text-secondary">The Sultan Promise</span>
-                    <h2 class="font-headline text-4xl text-on-surface md:text-5xl">Why Sultan?</h2>
+                    <h2 class="font-headline text-4xl text-on-surface md:text-5xl dark:text-white">Why Sultan?</h2>
                 </div>
                 <div class="grid grid-cols-1 gap-12 md:grid-cols-2 lg:grid-cols-4">
                     @foreach (
@@ -462,11 +489,11 @@
                         ] as $why
                     )
                         <div class="space-y-6 text-center">
-                            <div class="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-surface-container-low text-secondary">
+                            <div class="why-icon-circle mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-surface-container-low text-secondary dark:bg-zinc-800">
                                 <span class="material-symbols-outlined text-4xl">{{ $why['icon'] }}</span>
                             </div>
                             <h3 class="font-headline text-xl">{{ $why['title'] }}</h3>
-                            <p class="text-sm leading-relaxed text-on-surface-variant">{{ $why['text'] }}</p>
+                            <p class="text-sm leading-relaxed text-on-surface-variant dark:text-zinc-400">{{ $why['text'] }}</p>
                         </div>
                     @endforeach
                 </div>
@@ -474,12 +501,12 @@
 
             {{-- Testimonial --}}
             <section class="mx-auto max-w-5xl px-8">
-                <div class="relative overflow-hidden rounded-[4rem] bg-surface-container-low p-12 text-center md:p-20">
-                    <span class="material-symbols-outlined absolute -left-4 -top-4 text-on-surface/5" style="font-size: 9rem">format_quote</span>
+                <div class="testimonial-box relative overflow-hidden rounded-[4rem] bg-surface-container-low p-12 text-center md:p-20 dark:bg-zinc-900">
+                    <span class="material-symbols-outlined absolute -left-4 -top-4 text-on-surface/5 dark:text-white/5" style="font-size: 9rem">format_quote</span>
                     <div class="relative z-10">
                         <h2 class="font-headline mb-12 text-3xl">What Travelers Say</h2>
                         <div class="space-y-8">
-                            <p class="font-headline text-xl italic leading-relaxed text-on-surface md:text-2xl">
+                            <p class="font-headline text-xl italic leading-relaxed text-on-surface dark:text-zinc-100 md:text-2xl">
                                 "Sultan transformed our trip from a simple vacation into a deep cultural immersion. The hidden riad they recommended in Fes was the highlight of our entire year."
                             </p>
                             <div class="flex flex-col items-center gap-4">
@@ -492,8 +519,8 @@
                                     />
                                 </div>
                                 <div>
-                                    <div class="font-bold text-on-surface">Sarah J. Montgomery</div>
-                                    <div class="mt-1 font-body text-sm uppercase tracking-widest text-on-surface-variant">Condé Nast Traveler</div>
+                                    <div class="font-bold text-on-surface dark:text-white">Sarah J. Montgomery</div>
+                                    <div class="mt-1 font-body text-sm uppercase tracking-widest text-on-surface-variant dark:text-zinc-400">Condé Nast Traveler</div>
                                 </div>
                                 <div class="flex gap-1 text-secondary">
                                     @for ($i = 0; $i < 5; $i++)

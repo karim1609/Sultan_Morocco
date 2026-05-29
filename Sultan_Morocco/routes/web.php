@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\HotelController;
+use App\Http\Controllers\RestaurantController;
 use App\Http\Controllers\MessageController;
 use App\Models\User;
 use Illuminate\Support\Facades\Route;
@@ -29,6 +30,12 @@ Route::post("/logout", [AuthController::class, "logout"])->middleware("auth");
 Route::get("/hotels", [HotelController::class, "index"])->name("hotels.index");
 Route::get("/api/hotels", [HotelController::class, "list"])->name(
     "hotels.list",
+);
+Route::get("/restaurants", [RestaurantController::class, "index"])->name(
+    "restaurants.index",
+);
+Route::get("/api/restaurants", [RestaurantController::class, "list"])->name(
+    "restaurants.list",
 );
 Route::post("/api/chat", [ChatController::class, "chat"])->name("chat");
 
