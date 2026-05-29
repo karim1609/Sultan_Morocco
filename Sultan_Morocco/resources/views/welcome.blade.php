@@ -582,5 +582,6 @@
                 </div>
             </div>
         </footer>
+        <x-chatbot />
     </body>
-</html>
+    </html>

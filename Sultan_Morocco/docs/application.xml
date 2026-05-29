@@ -1,0 +1,345 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Sultan Morocco — machine-readable application description.
+  Generated structure for documentation, onboarding, or tooling.
+-->
+<application xmlns="https://sultan-morocco.local/schema/app-description" version="1.0" slug="sultan-morocco">
+    <metadata>
+        <name>Sultan Morocco</name>
+        <summary>Laravel web application for discovering Morocco: hotels via proxied Xotelo API, interactive map, session authentication, user profiles, and direct user-to-user messaging.</summary>
+        <type>web-application</type>
+        <license>MIT</license>
+        <repository-layout>laravel-13-skeleton</repository-layout>
+    </metadata>
+
+    <runtime>
+        <php minimum="8.3"/>
+        <framework name="Laravel" version="13"/>
+        <server-entry>public/index.php</server-entry>
+        <health-check method="GET" path="/up"/>
+    </runtime>
+
+    <stack>
+        <backend>
+            <item>PHP 8.3+</item>
+            <item>Laravel 13</item>
+            <item>Eloquent ORM</item>
+            <item>Laravel HTTP Client (Guzzle)</item>
+            <item>Session-based authentication (web guard)</item>
+            <item>Middleware: web, auth, guest</item>
+        </backend>
+        <frontend>
+            <item>Blade templating</item>
+            <item>Tailwind CSS 4 (via @tailwindcss/vite)</item>
+            <item>Vite 8</item>
+            <item>Vanilla JavaScript (theme, navbar, fetch)</item>
+            <item>Leaflet (map page)</item>
+            <item>Axios (bundled; primary hotel fetch uses native fetch in Blade)</item>
+        </frontend>
+        <tooling>
+            <item>Composer</item>
+            <item>npm</item>
+            <item>PHPUnit</item>
+            <item>Laravel Pint</item>
+            <item>Laravel Pail (dev)</item>
+        </tooling>
+    </stack>
+
+    <routing file="routes/web.php">
+        <note>All HTTP routes are registered as web routes. routes/api.php is not used in the default bootstrap.</note>
+
+        <route method="GET" uri="/" name="" middleware="web">
+            <handler type="closure" returns="view:welcome"/>
+        </route>
+
+        <route method="GET" uri="/login" name="login" middleware="web,guest">
+            <handler controller="App\Http\Controllers\AuthController" action="showLogin"/>
+        </route>
+        <route method="POST" uri="/login" name="" middleware="web,guest">
+            <handler controller="App\Http\Controllers\AuthController" action="login"/>
+        </route>
+        <route method="GET" uri="/signup" name="signup" middleware="web,guest">
+            <handler controller="App\Http\Controllers\AuthController" action="showSignup"/>
+        </route>
+        <route method="POST" uri="/signup" name="" middleware="web,guest">
+            <handler controller="App\Http\Controllers\AuthController" action="signup"/>
+        </route>
+
+        <route method="GET" uri="/logout" name="logout" middleware="web,auth">
+            <handler controller="App\Http\Controllers\AuthController" action="logout"/>
+        </route>
+        <route method="POST" uri="/logout" name="" middleware="web,auth">
+            <handler controller="App\Http\Controllers\AuthController" action="logout"/>
+        </route>
+
+        <route method="GET" uri="/hotels" name="hotels.index" middleware="web">
+            <handler controller="App\Http\Controllers\HotelController" action="index"/>
+        </route>
+        <route method="GET" uri="/api/hotels" name="hotels.list" middleware="web">
+            <handler controller="App\Http\Controllers\HotelController" action="list"/>
+            <description>JSON proxy to Xotelo list API; query: offset, limit, sort.</description>
+        </route>
+        <route method="GET" uri="/map" name="map.index" middleware="web">
+            <handler type="closure" returns="view:map.index"/>
+        </route>
+
+        <route method="GET" uri="/profile/{id}" name="profile" middleware="web,auth">
+            <handler type="closure" description="User::findOrFail; view profile.show"/>
+        </route>
+
+        <route method="GET" uri="/messages" name="messages.index" middleware="web,auth">
+            <handler controller="App\Http\Controllers\MessageController" action="index"/>
+        </route>
+        <route method="POST" uri="/messages/by-user-id" name="messages.by_user_id" middleware="web,auth">
+            <handler controller="App\Http\Controllers\MessageController" action="openByUserId"/>
+        </route>
+        <route method="GET" uri="/messages/{user}" name="messages.show" middleware="web,auth">
+            <handler controller="App\Http\Controllers\MessageController" action="show"/>
+            <binding parameter="user" model="App\Models\User"/>
+        </route>
+        <route method="POST" uri="/messages/{user}" name="messages.store" middleware="web,auth">
+            <handler controller="App\Http\Controllers\MessageController" action="store"/>
+            <binding parameter="user" model="App\Models\User"/>
+        </route>
+    </routing>
+
+    <controllers>
+        <controller class="App\Http\Controllers\AuthController">
+            <method name="showLogin" visibility="public" returns="View"/>
+            <method name="login" visibility="public" returns="RedirectResponse"/>
+            <method name="showSignup" visibility="public" returns="View"/>
+            <method name="signup" visibility="public" returns="RedirectResponse"/>
+            <method name="logout" visibility="public" returns="RedirectResponse"/>
+        </controller>
+        <controller class="App\Http\Controllers\HotelController">
+            <method name="index" visibility="public" returns="View" view="hotels.index"/>
+            <method name="list" visibility="public" returns="JsonResponse|Response">
+                <validates>offset: integer min 0; limit: 1-100; sort: best_value|popularity|distance</validates>
+                <upstream service="xotelo" path="/list"/>
+            </method>
+        </controller>
+        <controller class="App\Http\Controllers\MessageController">
+            <method name="openByUserId" visibility="public" returns="RedirectResponse"/>
+            <method name="index" visibility="public" returns="View" view="messages.index"/>
+            <method name="show" visibility="public" returns="View" view="messages.show"/>
+            <method name="store" visibility="public" returns="RedirectResponse"/>
+        </controller>
+    </controllers>
+
+    <models namespace="App\Models">
+        <model name="User" table="users" authenticatable="true">
+            <fillable>name, email, password, avatar, role, country</fillable>
+            <relations>
+                <hasMany name="reviews" related="Review"/>
+                <hasMany name="favorites" related="Favorite"/>
+                <hasMany name="itineraries" related="Itinerary"/>
+                <hasMany name="sentMessages" related="Message" foreignKey="sender_id"/>
+                <hasMany name="notifications" related="Notification"/>
+                <belongsToMany name="conversations" related="Conversation" pivot="conversation_user"/>
+            </relations>
+        </model>
+        <model name="Conversation" table="conversations">
+            <fillable>last_message_at, last_message_preview</fillable>
+            <relations>
+                <belongsToMany name="users" related="User" pivot="conversation_user"/>
+                <hasMany name="messages" related="Message"/>
+            </relations>
+            <static-methods>
+                <method name="findOrCreateDirectBetween">Ensures one 1:1 thread per user pair.</method>
+            </static-methods>
+        </model>
+        <model name="Message" table="messages">
+            <fillable>conversation_id, sender_id, body, read_at</fillable>
+            <relations>
+                <belongsTo name="conversation" related="Conversation"/>
+                <belongsTo name="sender" related="User" foreignKey="sender_id"/>
+            </relations>
+        </model>
+        <model name="Place" table="places">
+            <fillable>name, type, description, address, city, country, latitude, longitude, price_level, rating, image</fillable>
+        </model>
+        <model name="Review" table="reviews"/>
+        <model name="Favorite" table="favorites"/>
+        <model name="Itinerary" table="itineraries"/>
+        <model name="ItineraryItem" table="itinerary_items"/>
+        <model name="Notification" table="notifications"/>
+    </models>
+
+    <database>
+        <engine default="sqlite">Configurable via .env (MySQL, PostgreSQL supported by Laravel)</engine>
+        <tables>
+            <table name="users">
+                <column name="id" type="bigint" primary="true"/>
+                <column name="name" type="string"/>
+                <column name="email" type="string" unique="true"/>
+                <column name="email_verified_at" type="timestamp" nullable="true"/>
+                <column name="password" type="string"/>
+                <column name="avatar" type="string" nullable="true"/>
+                <column name="role" type="enum" values="user,admin,author" default="user"/>
+                <column name="country" type="string" nullable="true"/>
+                <column name="remember_token" type="string" nullable="true"/>
+                <column name="created_at" type="timestamp"/>
+                <column name="updated_at" type="timestamp"/>
+            </table>
+            <table name="sessions">
+                <description>Laravel session driver when using database sessions.</description>
+            </table>
+            <table name="password_reset_tokens"/>
+            <table name="cache"/>
+            <table name="jobs"/>
+            <table name="places">
+                <column name="type" type="enum" values="hotel,restaurant,bar,gym,attraction"/>
+            </table>
+            <table name="reviews">
+                <column name="user_id" type="foreignId" references="users"/>
+                <column name="place_id" type="foreignId" references="places"/>
+                <column name="rating" type="integer"/>
+                <column name="comment" type="text"/>
+                <column name="image" type="string" nullable="true"/>
+            </table>
+            <table name="favorites">
+                <unique columns="user_id,place_id"/>
+            </table>
+            <table name="itineraries">
+                <column name="user_id" type="foreignId" references="users"/>
+                <column name="name" type="string"/>
+                <column name="start_date" type="date"/>
+                <column name="end_date" type="date"/>
+            </table>
+            <table name="itinerary_items">
+                <column name="itinerary_id" type="foreignId" references="itineraries"/>
+                <column name="place_id" type="foreignId" references="places"/>
+                <column name="day" type="integer"/>
+                <column name="order" type="integer"/>
+            </table>
+            <table name="notifications">
+                <column name="user_id" type="foreignId" references="users"/>
+                <column name="title" type="string"/>
+                <column name="body" type="text"/>
+                <column name="is_read" type="boolean" default="false"/>
+            </table>
+            <table name="conversations">
+                <column name="last_message_at" type="timestamp" nullable="true"/>
+                <column name="last_message_preview" type="string" length="255" nullable="true"/>
+            </table>
+            <table name="conversation_user">
+                <column name="conversation_id" type="foreignId" references="conversations"/>
+                <column name="user_id" type="foreignId" references="users"/>
+                <unique columns="conversation_id,user_id"/>
+            </table>
+            <table name="messages">
+                <column name="conversation_id" type="foreignId" references="conversations"/>
+                <column name="sender_id" type="foreignId" references="users"/>
+                <column name="body" type="text"/>
+                <column name="read_at" type="timestamp" nullable="true"/>
+            </table>
+        </tables>
+        <note>Migration 2026_04_04_120000 replaces legacy chat_messages with conversations/messages schema.</note>
+    </database>
+
+    <features>
+        <feature id="welcome" auth="public">
+            <title>Landing page</title>
+            <view>welcome.blade.php</view>
+        </feature>
+        <feature id="auth" auth="guest-or-session">
+            <title>Registration and login</title>
+            <views>login.blade.php, signup.blade.php</views>
+            <layout>layouts/auth.blade.php</layout>
+        </feature>
+        <feature id="hotels" auth="public">
+            <title>Hotel grid</title>
+            <view>hotels/index.blade.php</view>
+            <data-source>GET /api/hotels</data-source>
+        </feature>
+        <feature id="map" auth="public">
+            <title>Interactive map</title>
+            <view>map/index.blade.php</view>
+            <library>Leaflet</library>
+            <data-source>GET /api/hotels</data-source>
+        </feature>
+        <feature id="profile" auth="required">
+            <title>User profile by ID</title>
+            <view>profile/show.blade.php</view>
+        </feature>
+        <feature id="messaging" auth="required">
+            <title>Direct messaging</title>
+            <views>messages/index.blade.php, messages/show.blade.php</views>
+            <layouts>components/layouts/app.blade.php, components/layouts/chat.blade.php</layouts>
+            <behavior>1:1 conversations; mark read on thread view; open by user id form</behavior>
+        </feature>
+        <feature id="theme" auth="public">
+            <title>Light and dark mode</title>
+            <assets>resources/js/theme.js, components/theme-init.blade.php, components/theme-toggle.blade.php</assets>
+            <persistence>localStorage key sultan-theme</persistence>
+        </feature>
+        <feature id="navigation" auth="public">
+            <title>Master navbar</title>
+            <component>components/navbar.blade.php</component>
+            <assets>resources/js/navbar.js</assets>
+            <variants>default, chat</variants>
+        </feature>
+    </features>
+
+    <integrations>
+        <integration id="xotelo" type="http-json">
+            <purpose>Hotel listings for Morocco region</purpose>
+            <config>config/services.php key xotelo</config>
+            <environment>
+                <variable name="XOTELO_BASE_URL" default="https://data.xotelo.com/api"/>
+                <variable name="XOTELO_LOCATION_KEY" required-for-hotels="true"/>
+            </environment>
+            <endpoint method="GET" relative-path="/list" proxied-by="HotelController@list"/>
+            <responses success="200 JSON pass-through" misconfigured="503" upstream-error="502"/>
+        </integration>
+    </integrations>
+
+    <views>
+        <blade path="resources/views/welcome.blade.php"/>
+        <blade path="resources/views/login.blade.php"/>
+        <blade path="resources/views/signup.blade.php"/>
+        <blade path="resources/views/hotels/index.blade.php"/>
+        <blade path="resources/views/map/index.blade.php"/>
+        <blade path="resources/views/profile/show.blade.php"/>
+        <blade path="resources/views/messages/index.blade.php"/>
+        <blade path="resources/views/messages/show.blade.php"/>
+        <blade path="resources/views/layouts/auth.blade.php"/>
+        <blade path="resources/views/components/layouts/app.blade.php"/>
+        <blade path="resources/views/components/layouts/chat.blade.php"/>
+        <blade path="resources/views/components/navbar.blade.php"/>
+        <blade path="resources/views/components/alert.blade.php"/>
+        <blade path="resources/views/components/theme-init.blade.php"/>
+        <blade path="resources/views/components/theme-toggle.blade.php"/>
+    </views>
+
+    <javascript-modules>
+        <module path="resources/js/app.js" entry="true">
+            <imports>bootstrap, theme, navbar</imports>
+        </module>
+        <module path="resources/js/bootstrap.js"/>
+        <module path="resources/js/theme.js"/>
+        <module path="resources/js/navbar.js">
+            <responsibility>Mobile drawer, scroll-compact header, CSS variable --nav-master-h</responsibility>
+        </module>
+    </javascript-modules>
+
+    <stylesheets>
+        <file path="resources/css/app.css">
+            <contains>Tailwind v4, custom utilities, master-navbar keyframes, theme variants</contains>
+        </file>
+    </stylesheets>
+
+    <security>
+        <item>CSRF protection on state-changing forms</item>
+        <item>Session fixation mitigation: regenerate session on login</item>
+        <item>Password hashing via Laravel casts</item>
+        <item>Blade escaping for user-generated message content</item>
+        <item>Hotel proxy: validated query parameters; location key server-side only</item>
+        <item>TLS: optional withoutVerifying in non-production for local HTTP client only</item>
+    </security>
+
+    <documentation>
+        <file path="README.md">Human-readable setup, routes, schema, deployment</file>
+        <file path="docs/application.xml">This document</file>
+    </documentation>
+</application>

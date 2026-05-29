@@ -1239,5 +1239,6 @@ searchInput.addEventListener('input', function() {
 ═══════════════════════════════════════════════════════════════════════ */
 loadHotels(0, sortBy, false);
 </script>
+<x-chatbot />
 </body>
 </html>
