@@ -1,0 +1,101 @@
+\chapter{Specification fonctionnelle detaillee}
+\label{ch:features}
+
+\section{Module Accueil}
+
+La vue \texttt{welcome.blade.php} assure le \textbf{positionnement produit}, les acces rapides (hotels, restaurants, carte) et integre \texttt{<x-chatbot />}. Objectif : conversion vers exploration ou inscription.
+
+\screenshot{figures/screenshots/welcome.png}{Page d'accueil}{Figure -- Landing page Sultan Morocco}
+
+\section{Module Hotels}
+
+\subsection{Regles metier}
+
+\begin{itemize}
+  \item Catalogue de \textbf{30} etablissements references au Maroc (Marrakech, Agadir, Casablanca, etc.).
+  \item Tri \texttt{best\_value} : note decroissante puis volume d'avis.
+  \item Tri \texttt{popularity} : volume d'avis decroissant.
+  \item Pagination : \texttt{offset}, \texttt{limit} $\in [1,100]$.
+  \item Filtre ville cote client derive de l'URL TripAdvisor embarquee.
+\end{itemize}
+
+\subsection{Structure de donnee (extrait)}
+
+\begin{lstlisting}[caption={Champs type d'un hotel (HotelController)}]
+"name", "key", "accommodation_type", "url",
+"review_summary" => ["rating", "count"],
+"price_ranges" => ["minimum", "maximum"],
+"geo" => ["latitude", "longitude"],
+"image", "merchandising_labels"
+\end{lstlisting}
+
+\animHotelLoad
+
+\screenshot{figures/screenshots/hotels.png}{Grille hotels}{Figure -- Listing paginé avec filtres}
+
+\subsection{Enrichissement adresse (Nominatim)}
+
+File d'attente JS ($\sim$1,15 s entre appels) respectant la politique OSM. Coordonnees issues du JSON statique ; adresse affichee est \textbf{calculee a la volee}.
+
+\section{Module Restaurants}
+
+\textbf{15} etablissements, champs : \texttt{city}, \texttt{cuisine}, \texttt{price\_level}, \texttt{specialties}, \texttt{tripadvisor\_url}, image Unsplash.
+
+API \texttt{GET /api/restaurants} : filtre \texttt{city}, tri \texttt{rating|price\_asc|price\_desc}.
+
+\screenshot{figures/screenshots/restaurants.png}{Restaurants}{Figure -- Page restaurants}
+
+\section{Module Carte}
+
+\begin{itemize}
+  \item Tuiles : OpenStreetMap + CARTO (attribution requise).
+  \item Marqueurs : coordonnees \texttt{geo} des hotels.
+  \item Clustering : MarkerCluster (CDN).
+  \item Sidebar : liste synchronisee, popup au clic.
+\end{itemize}
+
+\animMapFlow
+\screenshot{figures/screenshots/map.png}{Carte}{Figure -- Carte Leaflet}
+
+\section{Module Chatbot}
+
+Intents : \texttt{greeting}, \texttt{help}, \texttt{restaurants}, \texttt{hotels}, \texttt{surf}, \texttt{itinerary}, \texttt{weather}. Reponses : \texttt{text}, \texttt{buttons}, \texttt{cards}. Pas de persistance DB.
+
+\animChatbot
+\screenshot{figures/screenshots/chatbot.png}{Chatbot}{Figure -- Widget assistant}
+
+\section{Module Authentification}
+
+Signup : nom, email unique, mot de passe $\geq$ 8 caracteres, confirmation. Login : session regeneree. Logout : invalidation complete.
+
+\animAuthFlow
+\screenshot{figures/screenshots/login.png}{Login}{Figure -- Authentification}
+\screenshot{figures/screenshots/signup.png}{Inscription}{Figure -- Creation de compte utilisateur}
+
+\section{Module Profil et messagerie}
+
+Profil public par ID. Messagerie : thread 1:1, preview dernier message, compteur non-lus, \texttt{read\_at} a l'ouverture.
+
+\screenshot{figures/screenshots/profile.png}{Profil utilisateur}{Figure -- Fiche profil avec acces a la messagerie}
+
+\animMessaging
+\screenshot{figures/screenshots/messages-inbox.png}{Inbox}{Figure -- Boite de reception}
+\screenshot{figures/screenshots/messages-thread.png}{Thread}{Figure -- Conversation}
+
+\section{Exigences non fonctionnelles}
+
+\begin{table}[H]
+\centering
+\caption{Exigences non fonctionnelles principales}
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{ID} & \textbf{Exigence} & \textbf{Cible} \\
+\midrule
+NFR-01 & Temps chargement listing & $<$ 500 ms API locale \\
+NFR-02 & Disponibilite listings & 100\% (statique) \\
+NFR-03 & Responsive UI & Mobile + desktop \\
+NFR-04 & Accessibilite couleurs & Theme clair/sombre \\
+NFR-05 & Securite auth & Session + CSRF formulaires \\
+\bottomrule
+\end{tabular}
+\end{table}

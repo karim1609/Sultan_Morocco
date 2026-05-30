@@ -1,0 +1,54 @@
+\chapter{Cadre strategique et problematique}
+\label{ch:intro}
+
+\section{Contexte marche}
+
+Le secteur touristique marocain repose sur une offre fragmentee : OTAs internationales, guides papier, reseaux sociaux. Les voyageurs numeriques attendent une experience \textbf{unifiee}, \textbf{mobile-first}, avec recommandations locales et interaction sociale legere. Sultan Morocco se positionne comme \textit{hub de decouverte} avant reservation externe (TripAdvisor, Booking, etc.).
+
+\section{Problematique}
+
+Comment livrer une application web \textbf{rapide}, \textbf{maitrisee} (couts API, conformite donnees) et \textbf{evolutive}, tout en offrant carte, assistant et communaute?
+
+\section{Objectifs SMART}
+
+\begin{enumerate}
+  \item \textbf{Catalogue} : afficher $\geq$ 30 hotels et 15 restaurants avec tri, pagination et liens sources.
+  \item \textbf{Cartographie} : visualiser les hebergements sur carte interactive synchronisee avec la liste.
+  \item \textbf{Engagement} : permettre inscription, profils et messagerie 1:1 securisee.
+  \item \textbf{Assistance} : chatbot multilingue leger avec reponses structurees (cartes, boutons).
+  \item \textbf{Maintenabilite} : stack Laravel standard, deploiement reproductible (\texttt{composer run setup}).
+\end{enumerate}
+
+\section{Perimetre et hors-perimetre}
+
+\begin{table}[H]
+\centering
+\caption{Matrice de perimetre produit}
+\begin{tabularx}{\textwidth}{@{}lXX@{}}
+\toprule
+\textbf{Fonctionnalite} & \textbf{Statut} & \textbf{Commentaire} \\
+\midrule
+Listings hotels/restaurants & In scope (livre) & Donnees statiques PHP \\
+Paiement / reservation & Hors perimetre & Liens externes TripAdvisor \\
+Admin back-office & Hors perimetre V1 & Edition via code \\
+Places / avis / itineraires DB & In scope (schema) & UI V2 \\
+Moderation contenu & Hors perimetre & -- \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Parties prenantes}
+
+\begin{itemize}
+  \item \textbf{Visiteur} : consulte accueil, carte, listings, chatbot.
+  \item \textbf{Utilisateur inscrit} : messagerie, profil, historique session.
+  \item \textbf{Equipe technique} : maintient tableaux PHP, migrations, assets Vite.
+  \item \textbf{Exploitant} : hebergeur PHP, base SQLite/MySQL, variables \texttt{.env}.
+\end{itemize}
+
+\section{Methodologie documentaire}
+
+Ce rapport suit une approche \textbf{architecture-centree} : contexte $\rightarrow$ exigences $\rightarrow$ conception $\rightarrow$ realisation $\rightarrow$ qualite $\rightarrow$ deploiement $\rightarrow$ risques. Les diagrammes TikZ synthetisent les flux runtime valides sur le code source du depot \texttt{Sultan\_Morocco/}.
+
+\archDiagram
+\mvcDiagram

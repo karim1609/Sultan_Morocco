@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 
 class HotelController extends Controller
 {
-    // Real Morocco hotel data (originally from Xotelo API — now static fallback)
+    // Curated Morocco hotel listings (static JSON for /api/hotels)
     private array $HOTELS = [
         [
             "name" => "Riad Andallaspa",

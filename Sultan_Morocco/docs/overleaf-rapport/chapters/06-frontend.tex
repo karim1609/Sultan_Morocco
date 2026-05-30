@@ -1,0 +1,70 @@
+\chapter{Interface utilisateur et front-end}
+\label{ch:frontend}
+
+\section{Chaîne de build Vite}
+
+Fichiers d'entrée :
+\begin{itemize}
+  \item \texttt{resources/css/app.css} — Tailwind v4, variantes \texttt{dark}
+  \item \texttt{resources/js/app.js} — importe \texttt{theme.js}, \texttt{navbar.js}, axios
+\end{itemize}
+
+\section{Composants Blade réutilisables}
+
+\begin{table}[H]
+\centering
+\caption{Composants principaux}
+\begin{tabular}{@{}lp{8.5cm}@{}}
+\toprule
+\textbf{Composant} & \textbf{Rôle} \\
+\midrule
+\texttt{navbar} & Navigation ; variantes \texttt{default} / \texttt{chat} \\
+\texttt{chatbot} & FAB + fenêtre chat ; POST AJAX \\
+\texttt{layouts/app} & Shell principal + Vite \\
+\texttt{layouts/chat} & Fil messaging sombre \\
+\texttt{theme-toggle} & Bascule clair/sombre \\
+\texttt{alert} & Messages flash session \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Thème clair / sombre}
+
+Clé \texttt{localStorage} : \texttt{sultan-theme}. Le script \texttt{theme.js} applique la classe \texttt{dark} et l'attribut \texttt{data-theme} sur \texttt{<html>} avant le premier paint via \texttt{theme-init}.
+
+\section{Pages à JavaScript inline volumineux}
+
+Les vues \texttt{hotels/index}, \texttt{map/index} et \texttt{restaurants/index} contiennent CSS et JS intégrés pour autonomie visuelle (design « magazine »). Trade-off : maintenabilité vs maquette riche.
+
+\section{Accessibilite et responsive}
+
+\begin{itemize}
+  \item Navbar avec tiroir mobile (\texttt{navbar.js})
+  \item Comportement scroll-compact sur la barre de navigation
+  \item Grilles adaptatives Tailwind / CSS custom sur les listings
+\end{itemize}
+
+\section{Design system (tokens)}
+
+\begin{table}[H]
+\centering
+\caption{Palette et identite visuelle}
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Token} & \textbf{Couleur} & \textbf{Usage} \\
+\midrule
+SultanTeal & \texttt{\#0D4F4F} & Titres, liens, structure \\
+SultanGold & \texttt{\#C9A227} & Accents premium \\
+SultanTerracotta & \texttt{\#B85C38} & CTA, fleches flux \\
+SultanSand & \texttt{\#F5F0E8} & Fonds cartes, boites info \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Performance front-end}
+
+\begin{itemize}
+  \item Build production : \texttt{npm run build} (assets hashes dans \texttt{public/build}).
+  \item Pages lourdes : le JS inline augmente le HTML initial ; mitigation future = extraction modules ES.
+  \item CDN Leaflet : dependance reseau ; envisager self-host en prod.
+\end{itemize}

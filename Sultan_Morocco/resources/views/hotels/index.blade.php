@@ -1285,10 +1285,10 @@
     <footer class="sultan-footer">
         <div class="footer-logo">Sul<span>t</span>an</div>
         <p class="footer-credit">
-            Powered by <a href="https://xotelo.com" target="_blank" rel="noopener">Xotelo Hotel API</a>
+            Curated hotel listings
             &nbsp;·&nbsp;
             <a href="https://nominatim.openstreetmap.org" target="_blank" rel="noopener">OpenStreetMap / Nominatim</a>
-            <br />Hotel data sourced from TripAdvisor
+            <br />Hotel references from TripAdvisor
         </p>
     </footer>
 

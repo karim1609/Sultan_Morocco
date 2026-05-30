@@ -1,0 +1,79 @@
+\chapter{Securite, tests et deploiement}
+\label{ch:sec}
+
+\section{Modele de menace (synthese)}
+
+\begin{table}[H]
+\centering
+\caption{Surface d'attaque et controles}
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Surface} & \textbf{Menace} & \textbf{Controle actuel} \\
+\midrule
+Formulaires auth & Credential stuffing & Validation + messages generiques \\
+Session & Hijacking & Regeneration login, cookie chiffre \\
+Messages & IDOR conversation & Requetes filtrees par participant \\
+API JSON & Scraping massif & Rate limit a ajouter \\
+Chatbot & Abus OpenAI & Cle optionnelle, limiter POST \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Securite}
+
+\begin{table}[H]
+\centering
+\caption{Mesures de sécurité implémentées}
+\begin{tabular}{@{}lp{9cm}@{}}
+\toprule
+\textbf{Aspect} & \textbf{Implémentation} \\
+\midrule
+Authentification & Session Laravel, régénération à la connexion \\
+Mots de passe & Bcrypt via cast Eloquent \\
+CSRF & Token sur formulaires Blade \\
+Messagerie & Accès limité aux conversations de l'utilisateur \\
+XSS messages & Échappement \texttt{\{\{ \}\}} sur le corps \\
+Profils & Tout utilisateur connecté peut voir \texttt{/profile/\{id\}} \\
+Secrets & \texttt{.env} hors dépôt ; \texttt{OPENAI\_API\_KEY} optionnel \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{warnbox}{Recommandations production}
+\begin{itemize}
+  \item \texttt{APP\_DEBUG=false}, HTTPS obligatoire.
+  \item Rate-limit \texttt{/api/chat} et Nominatim côté proxy si trafic élevé.
+  \item Revoir la politique de visibilité des profils.
+  \item Ajouter token CSRF aux appels fetch du chatbot si politique stricte.
+\end{itemize}
+\end{warnbox}
+
+\section{Tests automatisés}
+
+PHPUnit configuré en SQLite mémoire (\texttt{phpunit.xml}).
+
+\begin{itemize}
+  \item \texttt{tests/Feature/ExampleTest.php} — \texttt{GET /} retourne 200
+  \item \texttt{tests/Unit/ExampleTest.php} — placeholder
+\end{itemize}
+
+\textbf{Pistes de tests :} auth, \texttt{/api/hotels}, chatbot intents, création conversation.
+
+\section{Déploiement}
+
+\begin{enumerate}
+  \item \texttt{composer install --no-dev --optimize-autoloader}
+  \item \texttt{npm ci \&\& npm run build}
+  \item \texttt{php artisan migrate --force}
+  \item Racine web = \texttt{public/}
+  \item Variables : \texttt{APP\_KEY}, \texttt{DB\_*}, optionnel \texttt{OPENAI\_API\_KEY}
+\end{enumerate}
+
+\section{Installation locale}
+
+\begin{lstlisting}[language={},caption={Commandes essentielles}]
+cd Sultan_Morocco
+composer run setup
+php artisan serve
+# ou : composer run dev
+\end{lstlisting}

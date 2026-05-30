@@ -662,7 +662,7 @@
         <div style="display:flex;align-items:flex-start;justify-content:space-between;">
             <div>
                 <p style="font-family:'Inter',sans-serif;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:rgba(255,255,255,0.6);margin-bottom:4px;">
-                    🇲🇦 &nbsp;Xotelo API
+                    🇲🇦 &nbsp;Curated listings
                 </p>
                 <h2 style="font-family:'Noto Serif',serif;font-size:18px;font-weight:700;color:#fff;line-height:1.2;">
                     Hotels in Morocco

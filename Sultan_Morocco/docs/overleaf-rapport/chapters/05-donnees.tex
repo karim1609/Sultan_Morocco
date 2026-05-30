@@ -1,0 +1,73 @@
+\chapter{Modele de donnees et persistance}
+\label{ch:data}
+
+\section{Strategie de persistance}
+
+L'application adopte un modele \textbf{hybride} : donnees touristiques en memoire PHP (read-only a l'execution) et donnees sociales/compte en base relationnelle. Ce decouplage isole la volumetrie future des POI du trafic transactionnel utilisateur.
+
+\erdDiagram
+
+\section{Configuration par defaut}
+
+\begin{itemize}
+  \item \textbf{SQLite} : fichier \texttt{database/database.sqlite}
+  \item \texttt{SESSION\_DRIVER=database}
+  \item \texttt{CACHE\_STORE=database}
+  \item \texttt{QUEUE\_CONNECTION=database}
+\end{itemize}
+
+\section{Tables actives}
+
+\subsection{Utilisateurs et sessions}
+
+Table \texttt{users} : \texttt{name}, \texttt{email}, \texttt{password} (bcrypt), \texttt{avatar}, \texttt{role} (enum \texttt{user|admin|author}), \texttt{country}, \texttt{email\_verified\_at}.
+
+\subsection{Messagerie}
+
+\begin{infobox}{Algorithme findOrCreateDirectBetween}
+\begin{enumerate}
+  \item Si $A = B$ : erreur 403 (impossible de se parler \`a soi-m\^eme).
+  \item Chercher une conversation existante avec exactement les participants $A$ et $B$.
+  \item Si trouv\'ee : retourner cette conversation.
+  \item Sinon : cr\'eer \texttt{conversations}, attacher $A$ et $B$ sur \texttt{conversation\_user}.
+\end{enumerate}
+\end{infobox}
+
+Champs \texttt{messages} : \texttt{body} (texte), \texttt{read\_at} (nullable timestamp).
+
+\section{Tables futures (non branchées UI)}
+
+\begin{longtable}{@{}lp{9cm}@{}}
+\toprule
+\textbf{Table} & \textbf{Rôle prévu} \\
+\midrule
+\texttt{places} & POI : hotel, restaurant, bar, gym, attraction \\
+\texttt{reviews} & Avis utilisateur sur un lieu \\
+\texttt{favorites} & Favoris (contrainte unique user+place) \\
+\texttt{itineraries} & Voyages planifiés \\
+\texttt{itinerary\_items} & Jour / ordre par lieu \\
+\texttt{notifications} & Alertes in-app \\
+\bottomrule
+\end{longtable}
+
+\section{Seeder de démonstration}
+
+\texttt{DatabaseSeeder} crée \textbf{200 utilisateurs} via \texttt{UserFactory} pour tester profils et messagerie. Aucune donnée de lieux n'est injectée.
+
+\section{Provenance des contenus listing}
+
+\begin{table}[H]
+\centering
+\caption{Origine des données affichées}
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Donnée} & \textbf{Source runtime} & \textbf{Source initiale} \\
+\midrule
+Liste hôtels & PHP statique & Curation TripAdvisor \\
+Images hôtels & CDN TripAdvisor (URL) & Idem \\
+Liste restaurants & PHP statique & Curation + Unsplash \\
+Adresses cartes & Nominatim live & Coordonnées statiques \\
+Réponses chatbot & PHP règles / OpenAI & Contenu éditorial \\
+\bottomrule
+\end{tabular}
+\end{table}

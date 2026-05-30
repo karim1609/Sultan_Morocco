@@ -1,0 +1,139 @@
+% Diagrammes architecture - rapport senior
+
+\newcommand{\archDiagram}{%
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  font=\small,
+  layer/.style={draw=SultanTeal, rounded corners, fill=SultanTeal!8,
+                minimum height=1.3cm, align=center},
+  ext/.style={draw=SultanTerracotta, rounded corners, fill=SultanTerracotta!10,
+              minimum height=1cm, align=center, font=\footnotesize}
+]
+  \node[layer, minimum width=11cm] (presentation) {
+    \textbf{Couche presentation}\\ Blade, Tailwind v4, JS inline, Leaflet (CDN)
+  };
+  \node[layer, minimum width=11cm, below=0.9cm of presentation] (app) {
+    \textbf{Couche application}\\ Contrôleurs Laravel, validation, policies (auth)
+  };
+  \node[layer, minimum width=5.2cm, below=0.9cm of app, anchor=north west, xshift=0.2cm] (static) {
+    \textbf{Donnees metier}\\ Tableaux PHP\\ (hotels, restaurants)
+  };
+  \node[layer, minimum width=5.2cm, below=0.9cm of app, anchor=north east, xshift=-0.2cm] (persist) {
+    \textbf{Persistance}\\ Eloquent + SQLite\\ users, messages
+  };
+  \node[ext, minimum width=2.4cm, right=0.35cm of presentation, yshift=-0.5cm] (nomi) {Nominatim};
+  \node[ext, minimum width=2.4cm, right=0.35cm of app] (openai) {OpenAI\\opt.};
+  \node[ext, minimum width=2.4cm, right=0.35cm of static] (ta) {CDN\\TripAdvisor};
+  \draw[-{Stealth}, thick, color=SultanTerracotta] (presentation.south) -- (app.north);
+  \draw[-{Stealth}] (app.south west) -- (static.north);
+  \draw[-{Stealth}] (app.south east) -- (persist.north);
+\end{tikzpicture}
+\caption{Architecture logique en couches du systeme Sultan Morocco}
+\label{fig:arch-layers}
+\end{figure}%
+}
+
+\newcommand{\mvcDiagram}{%
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  box/.style={draw, rounded corners, minimum width=2.6cm, minimum height=1.1cm, align=center, font=\footnotesize},
+  arr/.style={-{Stealth}, thick}
+]
+  \node[box, fill=SultanSand!60] (v) {\textbf{Vue}\\ \texttt{resources/views}};
+  \node[box, fill=SultanTeal!15, right=1.8cm of v] (c) {\textbf{Controleur}\\ \texttt{Http/Controllers}};
+  \node[box, fill=SultanGold!20, right=1.8cm of c] (m) {\textbf{Modele}\\ \texttt{app/Models}};
+  \draw[arr, color=SultanTerracotta] (v) -- node[above, font=\tiny] {donnees} (c);
+  \draw[arr] (c) -- node[above, font=\tiny] {Eloquent} (m);
+  \draw[arr, dashed] (m) -- node[below, font=\tiny] {affichage} (v);
+\end{tikzpicture}
+\caption{Pattern Model-View-Controller dans Laravel}
+\label{fig:mvc}
+\end{figure}%
+}
+
+\newcommand{\erdDiagram}{%
+\begin{figure}[H]
+\centering
+\resizebox{0.98\textwidth}{!}{%
+\begin{tikzpicture}[
+  entity/.style={draw=SultanTeal, thick, fill=SultanSand!40, align=center, font=\footnotesize, inner sep=4pt}
+]
+  \node[entity, minimum width=2.6cm] (u) {\textbf{users}\\id, email, password\\role, avatar};
+  \node[entity, minimum width=2.8cm, right=4.2cm of u] (c) {\textbf{conversations}\\last\_message\_at, preview};
+  \node[entity, minimum width=2.4cm, below=2cm of u] (cu) {\textbf{conversation\_user}};
+  \node[entity, minimum width=2.6cm, below=2cm of c] (m) {\textbf{messages}\\body, read\_at, sender\_id};
+  \node[entity, minimum width=2.4cm, left=3.8cm of u, fill=gray!12] (p) {\textbf{places}\\\textit{(evolution)}};
+  \node[entity, minimum width=2.2cm, below=1.6cm of p, fill=gray!12] (r) {\textbf{reviews}\\\textit{(evolution)}};
+  \draw[-{Stealth}] (u) -- node[font=\tiny, above] {M:N} (cu);
+  \draw[-{Stealth}] (c) -- (cu);
+  \draw[-{Stealth}] (c) -- node[font=\tiny, right] {1:N} (m);
+  \draw[-{Stealth}] (u) -- node[font=\tiny, left] {1:N} (m);
+  \draw[-{Stealth}, dashed, gray] (u) -- (r);
+  \draw[-{Stealth}, dashed, gray] (p) -- (r);
+\end{tikzpicture}%
+}
+\caption{Modele conceptuel de donnees (messagerie active, domaine touristique planifie)}
+\label{fig:erd}
+\end{figure}%
+}
+
+\newcommand{\deployDiagram}{%
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  box/.style={draw=SultanTeal, rounded corners, fill=SultanTeal!10,
+              minimum width=3.2cm, minimum height=1cm, align=center, font=\footnotesize}
+]
+  \node[box, minimum width=4cm] (client) {Navigateur};
+  \node[box, minimum width=4cm, right=1.2cm of client] (web) {Nginx/Apache\\ \texttt{public/}};
+  \node[box, minimum width=4cm, right=1.2cm of web] (php) {PHP-FPM\\ Laravel};
+  \node[box, minimum width=3cm, below=1.3cm of php] (db) {SQLite / MySQL};
+  \draw[-{Stealth}, thick] (client) -- (web) -- (php) -- (db);
+\end{tikzpicture}
+\caption{Topologie de deploiement cible en production}
+\label{fig:deploy}
+\end{figure}%
+}
+
+\newcommand{\routesPie}{%
+\begin{figure}[H]
+\centering
+\begin{tabular}{@{}lrr@{}}
+\toprule
+\textbf{Domaine fonctionnel} & \textbf{Routes} & \textbf{\%} \\
+\midrule
+Pages publiques (accueil, listings, carte) & 7 & 30 \\
+Authentification & 6 & 26 \\
+Messagerie sociale & 4 & 17 \\
+API JSON internes & 4 & 17 \\
+Sante / divers & 2 & 9 \\
+\midrule
+\textbf{Total} & \textbf{23} & \textbf{100} \\
+\bottomrule
+\end{tabular}
+\caption{Repartition des endpoints HTTP}
+\label{fig:routes-stats}
+\end{figure}%
+}
+
+\newcommand{\dataFlowDiagram}{%
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  box/.style={draw, rounded corners, align=center, font=\footnotesize, minimum height=0.85cm},
+  arr/.style={-{Stealth}, thick, color=SultanTerracotta}
+]
+  \node[box, fill=SultanSand!50, minimum width=2.2cm] (u) {Utilisateur};
+  \node[box, fill=white, minimum width=2.4cm, right=0.9cm of u] (b) {Navigateur};
+  \node[box, fill=SultanTeal!12, minimum width=2.6cm, right=0.9cm of b] (l) {Laravel API};
+  \node[box, fill=yellow!15, minimum width=2.2cm, right=0.9cm of l] (d) {JSON statique};
+  \node[box, fill=orange!12, minimum width=2.2cm, below=1.1cm of b] (n) {Nominatim OSM};
+  \draw[arr] (u)--(b)--(l)--(d);
+  \draw[arr, dashed] (b)--(n);
+\end{tikzpicture}
+\caption{Flux de donnees pour l'affichage d'un hotel (liste + adresse)}
+\label{fig:dataflow}
+\end{figure}%
+}

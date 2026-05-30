@@ -1,0 +1,52 @@
+\begin{titlepage}
+  \centering
+  \vspace*{0.5cm}
+  {\small\textcolor{SultanTerracotta}{RAPPORT TECHNIQUE SENIOR}}\par
+  \vspace{0.8cm}
+  {\Huge\bfseries\color{SultanTeal} \reporttitle\par}
+  \vspace{0.5cm}
+  {\LARGE \reportsubtitle\par}
+  \vspace{1.5cm}
+  \begin{tikzpicture}
+    \fill[SultanTeal!12] (-7,-2) rectangle (7,2);
+    \draw[SultanGold, line width=1.5pt] (-6.5,-1.7) rectangle (6.5,1.7);
+    \node[align=center] at (0,0.4) {\Huge\bfseries\color{SultanTeal} SULTAN MOROCCO};
+    \node[align=center, font=\large] at (0,-0.6) {Tourisme digital -- Maroc};
+  \end{tikzpicture}
+  \vspace{1.2cm}
+  {\large\reportstack\par}
+  \vspace{0.5cm}
+  {\large \reportversion\par}
+  \vfill
+  \begin{minipage}{0.85\textwidth}
+    \centering
+    \textbf{Document de synthese} couvrant l'architecture logicielle, la conception fonctionnelle, la securite, la qualite et les perspectives d'evolution du produit.
+  \end{minipage}
+  \vspace{1.2cm}
+\end{titlepage}
+
+\pagenumbering{roman}
+\chapter*{Resume executif}
+\addcontentsline{toc}{chapter}{Resume executif}
+
+\textbf{Sultan Morocco} est une plateforme web Laravel~13 destinee a la decouverte touristique du Maroc. Le produit combine \textbf{listings curates} (30 hotels, 15 restaurants) servis depuis le backend sans API commerciale temps reel, une \textbf{carte Leaflet}, un \textbf{assistant conversationnel} hybride (regles + OpenAI optionnel), l'\textbf{authentification par session} et une \textbf{messagerie directe} entre utilisateurs.
+
+\begin{keybox}{Resultats cles}
+\begin{itemize}[noitemsep]
+  \item \textbf{Autonomie data} : zero dependance Xotelo/TripAdvisor API pour les catalogues.
+  \item \textbf{Time-to-first-byte} faible sur listings (donnees en memoire PHP).
+  \item \textbf{Schema extensible} : places, avis, itineraires deja migres, prets pour V2.
+  \item \textbf{UX premium} : theming clair/sombre, navigation unifiee, pages riches.
+\end{itemize}
+\end{keybox}
+
+\chapter*{Abstract}
+\addcontentsline{toc}{chapter}{Abstract}
+
+Sultan Morocco is a production-grade Laravel travel discovery platform featuring static curated listings, Leaflet mapping with OpenStreetMap reverse geocoding, a rule-based travel chatbot with optional GPT-4o-mini fallback, session authentication, and peer messaging. This report documents architectural decisions, API contracts, data models, security posture, and a phased roadmap.
+
+\tableofcontents
+\listoffigures
+\listoftables
+\cleardoublepage
+\pagenumbering{arabic}

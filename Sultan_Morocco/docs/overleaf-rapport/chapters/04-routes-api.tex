@@ -1,0 +1,65 @@
+\chapter{Routes HTTP et API JSON}
+\label{ch:routes}
+
+\section{Tableau complet des routes}
+
+\small
+\begin{longtable}{@{}llllp{4.2cm}@{}}
+\caption{Inventaire des routes applicatives} \label{tab:routes} \\
+\toprule
+\textbf{Méthode} & \textbf{URI} & \textbf{Nom} & \textbf{MW} & \textbf{Description} \\
+\midrule
+\endhead
+GET & \texttt{/} & - & web & Accueil \\
+GET & \texttt{/login} & login & guest & Formulaire \\
+POST & \texttt{/login} & - & guest & Connexion \\
+GET & \texttt{/signup} & signup & guest & Inscription \\
+POST & \texttt{/signup} & - & guest & Création compte \\
+GET/POST & \texttt{/logout} & logout & auth & Déconnexion \\
+GET & \texttt{/hotels} & hotels.index & web & Page hôtels \\
+GET & \texttt{/api/hotels} & hotels.list & web & JSON hôtels \\
+GET & \texttt{/restaurants} & restaurants.index & web & Page restaurants \\
+GET & \texttt{/api/restaurants} & restaurants.list & web & JSON restaurants \\
+POST & \texttt{/api/chat} & chat & web & Chatbot \\
+GET & \texttt{/map} & map.index & web & Carte \\
+GET & \texttt{/profile/\{id\}} & profile & auth & Profil \\
+GET & \texttt{/messages} & messages.index & auth & Inbox \\
+POST & \texttt{/messages/by-user-id} & messages.by\_user\_id & auth & Ouvrir fil \\
+GET & \texttt{/messages/\{user\}} & messages.show & auth & Thread \\
+POST & \texttt{/messages/\{user\}} & messages.store & auth & Envoyer \\
+GET & \texttt{/up} & - & - & Health check \\
+\bottomrule
+\end{longtable}
+\normalsize
+
+\section{Contrat JSON — Hôtels}
+
+\textbf{Requête :} \texttt{GET /api/hotels?offset=0\&limit=30\&sort=best\_value}
+
+\textbf{Réponse 200 :}
+\begin{lstlisting}[language={},caption={Structure JSON}]
+{
+  "error": null,
+  "result": {
+    "total_count": 30,
+    "limit": 30,
+    "offset": 0,
+    "list": [ { "name": "...", "geo": {...}, ... } ]
+  }
+}
+\end{lstlisting}
+
+\section{Contrat JSON — Restaurants}
+
+\textbf{Paramètres :} \texttt{city}, \texttt{sort} $\in$ \{\texttt{rating}, \texttt{price\_asc}, \texttt{price\_desc}\}.
+
+\section{Contrat JSON — Chatbot}
+
+\textbf{Requête :} \texttt{POST /api/chat} body \texttt{\{ "message": "..." \}}
+
+\textbf{Réponses types :}
+\begin{itemize}
+  \item \texttt{type: "text"} + \texttt{reply} + \texttt{options[]}
+  \item \texttt{type: "buttons"}
+  \item \texttt{type: "cards"} + \texttt{items[]} (nom, lieu, note, image)
+\end{itemize}

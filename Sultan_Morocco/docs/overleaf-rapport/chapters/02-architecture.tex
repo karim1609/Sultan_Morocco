@@ -1,0 +1,69 @@
+\chapter{Architecture technique}
+\label{ch:arch}
+
+\section{Principes directeurs}
+
+\begin{itemize}
+  \item \textbf{Separation des concerns} : MVC Laravel, API JSON decouples des vues Blade.
+  \item \textbf{Fail-safe listings} : pas de single point of failure API tierce pour hotels/restaurants.
+  \item \textbf{Progressive enhancement} : Nominatim enrichit l'UX sans bloquer le coeur metier.
+  \item \textbf{Convention over configuration} : routes \texttt{web.php}, migrations, seeders standards.
+\end{itemize}
+
+\section{Stack et versions}
+
+\begin{table}[H]
+\centering
+\caption{Stack technique reference}
+\begin{tabular}{@{}llp{6.5cm}@{}}
+\toprule
+\textbf{Couche} & \textbf{Technologie} & \textbf{Role} \\
+\midrule
+Runtime & PHP 8.3+ & Execution serveur \\
+Framework & Laravel 13 & Routing, ORM, auth, vues \\
+Front build & Vite 8 + Tailwind 4 & CSS/JS compiles \\
+Carte & Leaflet 1.9 (CDN) & Visualisation spatiale \\
+Geocoding & Nominatim & Adresses (client) \\
+IA optionnelle & OpenAI gpt-4o-mini & Chatbot fallback \\
+Tests & PHPUnit 12 & Regression (a etendre) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Decisions d'architecture (ADR synthese)}
+
+\begin{infobox}{ADR-001 : Listings statiques en PHP}
+\textbf{Contexte} : APIs hotelieres payantes / instables.\\
+\textbf{Decision} : tableaux \texttt{\$HOTELS} et \texttt{\$RESTAURANTS} dans les controleurs.\\
+\textbf{Consequences} : + simplicite, + performance ; -- mise a jour manuelle, pas de sync temps reel.
+\end{infobox}
+
+\begin{infobox}{ADR-002 : Session driver database}
+\textbf{Contexte} : scalabilite legere multi-instances.\\
+\textbf{Decision} : \texttt{SESSION\_DRIVER=database} + table \texttt{sessions}.\\
+\textbf{Consequences} : sessions persistees ; necessite migrations a jour.
+\end{infobox}
+
+\begin{infobox}{ADR-003 : Messagerie relationnelle normalisee}
+\textbf{Contexte} : remplacer ancienne table \texttt{chat\_messages} (bot).\\
+\textbf{Decision} : \texttt{conversations} + pivot + \texttt{messages} avec \texttt{read\_at}.\\
+\textbf{Consequences} : modele extensible vers groupes / pieces jointes en V2.
+\end{infobox}
+
+\section{Pipeline HTTP}
+
+\begin{enumerate}
+  \item Requete $\rightarrow$ \texttt{public/index.php}
+  \item Bootstrap Laravel $\rightarrow$ middleware \texttt{web}
+  \item Route $\rightarrow$ Controller ou closure
+  \item Reponse HTML (Blade) ou JSON
+  \item Assets Vite (\texttt{app.css}, \texttt{app.js}) + JS inline sur pages metier
+\end{enumerate}
+
+\routesPie
+\dataFlowDiagram
+\deployDiagram
+
+\section{Structure du depot}
+
+Le monorepo \texttt{Sultan\_App} encapsule \texttt{Sultan\_Morocco/} (application). Aucun microservice : \textbf{monolithe modulaire} adapte a la taille actuelle de l'equipe et du trafic attendu en phase pilote.

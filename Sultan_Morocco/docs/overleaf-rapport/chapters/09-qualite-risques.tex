@@ -1,0 +1,80 @@
+\chapter{Qualite, risques et gouvernance technique}
+\label{ch:quality}
+
+\section{Dette technique identifiee}
+
+\begin{table}[H]
+\centering
+\caption{Registre de dette technique}
+\begin{tabularx}{\textwidth}{@{}lXl@{}}
+\toprule
+\textbf{ID} & \textbf{Description} & \textbf{Priorite} \\
+\midrule
+DT-01 & Listings en PHP (pas admin UI) & Haute \\
+DT-02 & JS/CSS inline massif dans Blade hotels/map & Moyenne \\
+DT-03 & Couverture tests quasi nulle & Haute \\
+DT-04 & Profils publics sans ACL fine & Moyenne \\
+DT-05 & Chatbot POST sans CSRF explicite AJAX & Moyenne \\
+DT-06 & Schema places/reviews non utilise & Basse (V2) \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Analyse des risques}
+
+\begin{table}[H]
+\centering
+\small
+\caption{Matrice risques (probabilite / impact)}
+\begin{tabular}{@{}llll@{}}
+\toprule
+\textbf{Risque} & \textbf{Prob.} & \textbf{Impact} & \textbf{Mitigation} \\
+\midrule
+Rate-limit Nominatim & M & M & Cache adresses, proxy \\
+Cout OpenAI si abus & M & L & Rate limit / desactiver \\
+Donnees perimees & H & M & Process MAJ tableaux PHP \\
+Fuite donnees profil & L & H & Policies + visibilite \\
+Charge SQLite prod & M & M & Migrer MySQL \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Strategie de tests recommandee}
+
+\begin{enumerate}
+  \item \textbf{Feature} : \texttt{GET /api/hotels} structure JSON, pagination bornes.
+  \item \textbf{Feature} : auth login/signup/logout + protection routes \texttt{auth}.
+  \item \textbf{Feature} : messagerie -- isolation conversations, anti auto-message.
+  \item \textbf{Unit} : \texttt{Conversation::findOrCreateDirectBetween}.
+  \item \textbf{E2E} (Dusk/Playwright) : parcours visiteur $\rightarrow$ signup $\rightarrow$ message.
+\end{enumerate}
+
+\section{Observabilite}
+
+\begin{itemize}
+  \item Logs Laravel : \texttt{storage/logs/laravel.log}
+  \item \texttt{composer run dev} : Pail pour tail temps reel
+  \item Health : \texttt{GET /up} pour sonde load balancer
+  \item Production : integrer Sentry/Bugsnag (recommande)
+\end{itemize}
+
+\section{Roadmap produit (12 mois)}
+
+\begin{table}[H]
+\centering
+\caption{Feuille de route indicative}
+\begin{tabular}{@{}llp{7cm}@{}}
+\toprule
+\textbf{Phase} & \textbf{Horizon} & \textbf{Livrables} \\
+\midrule
+V1.1 & T1 & Admin CRUD listings, tests CI \\
+V2.0 & T2 & Module places + avis en base \\
+V2.5 & T3 & Itineraires partages, notifications \\
+V3.0 & T4 & i18n FR/AR/EN, PWA offline partiel \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Conformite et ethique des donnees}
+
+Les liens et images TripAdvisor sont des \textbf{references} ; l'application ne scrape pas en production. Nominatim impose usage equitable (file d'attente, User-Agent en prod). OpenAI : ne pas logger de donnees personnelles dans les prompts utilisateurs.

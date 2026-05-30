@@ -1,0 +1,107 @@
+\chapter{Conclusion generale}
+\label{ch:conclusion}
+
+\section{Synthese}
+
+Sultan Morocco demontre qu'une experience touristique riche peut etre livree avec un \textbf{monolithe Laravel maitrise}, sans dependance couteuse a des APIs de listing. Les choix statiques + enrichissement OSM + chatbot hybride constituent un equilibre pertinent pour un MVP oriente demonstration et iteration rapide.
+
+\section{Criteres de succes atteints}
+
+\begin{itemize}
+  \item Parcours visiteur complet (accueil $\rightarrow$ hotels/restaurants/carte).
+  \item Comptes utilisateurs et messagerie operationnels.
+  \item Documentation technique (README + present rapport).
+  \item Pipeline install reproductible (\texttt{composer run setup}).
+\end{itemize}
+
+\section{Travaux restants prioritaires}
+
+\begin{enumerate}
+  \item Back-office ou CMS pour listings.
+  \item Suite de tests Feature + pipeline CI.
+  \item Durcissement securite profils et chatbot.
+  \item Activation progressive du schema \texttt{places}.
+\end{enumerate}
+
+\chapter*{Annexes}
+\addcontentsline{toc}{chapter}{Annexes}
+
+\section*{Annexe A -- Glossaire}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{@{}lp{10cm}@{}}
+\toprule
+\textbf{Terme} & \textbf{Definition} \\
+\midrule
+Listing statique & Donnee hotel/restaurant embarquee en PHP, servie en JSON \\
+Nominatim & Service OSM de geocodage inverse (lat/lon $\rightarrow$ adresse) \\
+Intent (chatbot) & Categorie semantique deduite par mots-cles \\
+Thread & Fil de messagerie 1:1 entre deux utilisateurs \\
+ADR & Architecture Decision Record \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section*{Annexe B -- Arborescence applicative}
+
+\begin{lstlisting}
+Sultan_Morocco/
+  app/Http/Controllers/  (Auth, Hotel, Restaurant, Chat, Message)
+  app/Models/            (9 modeles Eloquent)
+  database/migrations/   (11+ fichiers)
+  resources/views/       (Blade + composants)
+  routes/web.php
+  public/                (point d'entree web)
+\end{lstlisting}
+
+\section*{Annexe C -- Variables d'environnement}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Variable} & \textbf{Requis} & \textbf{Usage} \\
+\midrule
+APP\_KEY & Oui & Chiffrement \\
+DB\_* & Oui & Persistance \\
+SESSION\_DRIVER & Oui & Sessions (database) \\
+OPENAI\_API\_KEY & Non & Chatbot IA \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section*{Annexe D -- Metriques code}
+
+\begin{table}[H]
+\centering
+\caption{Indicateurs projet}
+\begin{tabular}{@{}lr@{}}
+\toprule
+Hotels catalogue & 30 \\
+Restaurants catalogue & 15 \\
+Routes HTTP & 23 \\
+Controleurs metier & 5 \\
+Modeles Eloquent & 9 \\
+Vues Blade (fichiers) & 15+ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section*{Annexe E -- Compilation Overleaf}
+
+\begin{enumerate}
+  \item Uploadez le ZIP \texttt{Sultan-Morocco-Rapport-Overleaf.zip}.
+  \item \textbf{Main document} = \texttt{main.tex} (rapport senior complet).
+  \item Compilateur = \textbf{pdfLaTeX}.
+  \item Recompile (2 fois si table des matieres incomplete).
+  \item Captures optionnelles : \texttt{figures/screenshots/*.png}.
+\end{enumerate}
+
+\vfill
+\begin{center}
+\rule{0.55\textwidth}{0.6pt}\\[0.6em]
+{\LARGE\bfseries\color{SultanTeal} Fin du rapport senior}\\[0.3em]
+\reportversion
+\end{center}

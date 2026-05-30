@@ -1,0 +1,108 @@
+% Figures de flux (statiques, multi-etapes) - rapport senior
+
+\newcommand{\animHotelLoad}{%
+\begin{figure}[H]
+\centering
+\small
+\begin{tabular}{@{}c@{\,$\rightarrow$\,}c@{\,$\rightarrow$\,}c@{\,$\rightarrow$\,}c@{}}
+\fbox{\parbox{1.7cm}{\centering 1. GET /hotels}} &
+\fbox{\parbox{1.7cm}{\centering 2. /api/hotels}} &
+\fbox{\parbox{1.7cm}{\centering 3. \$HOTELS}} &
+\fbox{\parbox{1.7cm}{\centering 4. JSON}} \\
+\fbox{\parbox{1.7cm}{\centering 5. Grille DOM}} &
+\fbox{\parbox{1.7cm}{\centering 6. Nominatim}} &
+\fbox{\parbox{1.7cm}{\centering 7. Adresse}} &
+\fbox{\parbox{1.7cm}{\centering 8. UX finale}} \\
+\end{tabular}
+\caption{Pipeline de chargement de la page Hotels (8 etapes)}
+\label{fig:flow-hotels}
+\end{figure}%
+}
+
+\newcommand{\animAuthFlow}{%
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  step/.style={draw=SultanTeal, rounded corners, fill=SultanSand!40,
+               minimum width=9.5cm, minimum height=0.75cm, align=center, font=\small}
+]
+  \node[step] (a1) at (0,4) {1. Soumission formulaire POST /login (email, mot de passe)};
+  \node[step] (a2) at (0,3) {2. Validation Laravel + Auth::attempt sur table users};
+  \node[step] (a3) at (0,2) {3. Regeneration de session + cookie chiffre (APP\_KEY)};
+  \node[step] (a4) at (0,1) {4. Redirection avec message flash + navbar authentifiee};
+  \node[step, fill=red!8] (a5) at (0,0) {Echec : retour formulaire, erreur email (sans fuite utilisateur)};
+  \draw[-{Stealth}] (a1)--(a2)--(a3)--(a4);
+  \draw[-{Stealth}, dashed, color=red!60] (a2.west) .. controls (-2,2) .. (a5.west);
+\end{tikzpicture}
+\caption{Flux d'authentification par session (succes et echec)}
+\label{fig:flow-auth}
+\end{figure}%
+}
+
+\newcommand{\animMessaging}{%
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  actor/.style={draw, rounded corners, fill=SultanSand!50, minimum width=1.8cm, align=center},
+  action/.style={draw=SultanTeal, rounded corners, fill=SultanTeal!8, minimum width=8.5cm, align=center, font=\footnotesize}
+]
+  \node[actor] (ua) at (0,5) {User A};
+  \node[actor] (ub) at (8,5) {User B};
+  \node[action] at (4,4) {A visite /profile/B puis Message};
+  \node[action] at (4,3) {findOrCreateDirectBetween(A,B)};
+  \node[action] at (4,2) {POST /messages/B + body + @csrf};
+  \node[action] at (4,1) {INSERT messages, UPDATE preview conversation};
+  \node[action] at (4,0) {B ouvre thread : read\_at renseigne};
+  \draw[-{Stealth}] (ua) -- (4,4);
+  \draw[-{Stealth}] (4,0) -- (ub);
+\end{tikzpicture}
+\caption{Scenario de messagerie directe 1:1}
+\label{fig:flow-msg}
+\end{figure}%
+}
+
+\newcommand{\animChatbot}{%
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  decision/.style={diamond, draw=SultanTerracotta, aspect=2, fill=SultanSand!40, align=center, font=\footnotesize},
+  proc/.style={draw=SultanTeal, rounded corners, fill=SultanTeal!10, minimum width=3.5cm, align=center, font=\footnotesize}
+]
+  \node[proc] (in) at (0,4) {POST /api/chat};
+  \node[proc] (det) at (0,3) {detectIntent(message)};
+  \node[decision] (d) at (0,1.8) {Intent\\connu?};
+  \node[proc] (rules) at (-3.2,0.5) {Retour RULES\\texte, boutons, cartes};
+  \node[decision] (d2) at (3.2,0.5) {OPENAI\\KEY?};
+  \node[proc] (ai) at (3.2,-0.8) {GPT-4o-mini};
+  \node[proc] (fb) at (3.2,-2) {Fallback statique};
+  \draw[-{Stealth}] (in)--(det)--(d);
+  \draw[-{Stealth}] (d) -- node[above, font=\tiny]{oui} (rules);
+  \draw[-{Stealth}] (d) -- node[above, font=\tiny]{non} (d2);
+  \draw[-{Stealth}] (d2) -- node[right, font=\tiny]{oui} (ai);
+  \draw[-{Stealth}] (d2) -- node[right, font=\tiny]{non} (fb);
+\end{tikzpicture}
+\caption{Logique de decision du chatbot Sultan}
+\label{fig:flow-chat}
+\end{figure}%
+}
+
+\newcommand{\animMapFlow}{%
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  box/.style={draw=SultanTeal, rounded corners, fill=blue!8, minimum width=2.8cm,
+              minimum height=0.95cm, align=center, font=\footnotesize}
+]
+  \node[box] (l) {Init Leaflet\\tuiles OSM/CARTO};
+  \node[box, right=0.5cm of l] (a) {GET /api/hotels};
+  \node[box, right=0.5cm of a] (m) {Markers +\\clusters};
+  \node[box, below=1cm of a] (s) {Sidebar +\\sync selection};
+  \node[box, below=1cm of m] (n) {Nominatim\\reverse};
+  \draw[-{Stealth}, thick] (l)--(a)--(m);
+  \draw[-{Stealth}] (a)--(s);
+  \draw[-{Stealth}] (m)--(n);
+\end{tikzpicture}
+\caption{Orchestration de la page carte interactive}
+\label{fig:flow-map}
+\end{figure}%
+}

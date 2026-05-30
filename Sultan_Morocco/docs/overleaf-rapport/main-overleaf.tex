@@ -1,0 +1,107 @@
+% !TEX program = pdflatex
+% ============================================================
+%  FICHIER UNIQUE POUR OVERLEAF - Si main.tex echoue, compilez CELUI-CI
+%  Menu Overleaf : Main document = main-overleaf.tex
+% ============================================================
+\documentclass[12pt,a4paper,oneside]{report}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage[french]{babel}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{float}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{listings}
+
+\definecolor{SultanTeal}{HTML}{0D4F4F}
+\definecolor{SultanSand}{HTML}{F5F0E8}
+
+\hypersetup{colorlinks=true,linkcolor=SultanTeal}
+
+\begin{document}
+
+\begin{titlepage}
+\centering
+\vspace*{2cm}
+{\Huge\bfseries\color{SultanTeal} Sultan Morocco\par}
+\vspace{1cm}
+{\Large Rapport technique -- Application web Laravel 13\par}
+\vspace{2cm}
+{\large PHP 8.3 / Tailwind v4 / Vite 8\par}
+\vfill
+{\large Mai 2026\par}
+\end{titlepage}
+
+\tableofcontents
+\cleardoublepage
+
+\chapter{Introduction}
+\textbf{Sultan Morocco} est une application de decouverte du Maroc : hotels et restaurants (donnees statiques PHP), carte Leaflet, chatbot, authentification et messagerie directe.
+
+\chapter{Architecture}
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  box/.style={draw=SultanTeal, rounded corners, fill=SultanSand, minimum width=3cm,
+              minimum height=1cm, align=center, font=\small}
+]
+  \node[box] (b) {Navigateur};
+  \node[box, below=1.2cm of b] (l) {Laravel};
+  \node[box, below left=1cm and 0.5cm of l] (s) {Listings\\statiques};
+  \node[box, below right=1cm and 0.5cm of l] (d) {BDD\\users + msg};
+  \draw[-{Stealth}, thick] (b)--(l) (l)--(s) (l)--(d);
+\end{tikzpicture}
+\caption{Architecture trois couches}
+\end{figure}
+
+\chapter{Fonctionnalites}
+\section{Hotels (30 entrees)}
+\texttt{HotelController::\$HOTELS} sert \texttt{GET /api/hotels} (pagination, tri best\_value ou popularity). Adresses via Nominatim dans le navigateur.
+
+\section{Restaurants (15 entrees)}
+\texttt{RestaurantController::\$RESTAURANTS} -- \texttt{GET /api/restaurants}.
+
+\section{Carte}
+Leaflet + marqueurs depuis l'API hotels.
+
+\section{Chatbot}
+\texttt{POST /api/chat} -- regles par mots-cles, OpenAI optionnel (\texttt{OPENAI\_API\_KEY}).
+
+\section{Messagerie}
+Tables \texttt{conversations}, \texttt{conversation\_user}, \texttt{messages}.
+
+\chapter{Routes principales}
+\begin{tabular}{@{}lll@{}}
+\toprule
+Methode & URI & Role \\
+\midrule
+GET & / & Accueil \\
+GET & /hotels & Page hotels \\
+GET & /api/hotels & JSON hotels \\
+GET & /restaurants & Restaurants \\
+GET & /map & Carte \\
+POST & /api/chat & Chatbot \\
+GET/POST & /login, /signup & Auth \\
+GET & /messages & Inbox \\
+POST & /messages/\{user\} & Envoi message \\
+\bottomrule
+\end{tabular}
+
+\chapter{Installation}
+\begin{lstlisting}
+cd Sultan_Morocco
+composer run setup
+php artisan serve
+\end{lstlisting}
+Ouvrir \url{http://127.0.0.1:8000}. Aucune cle API requise pour les listings.
+
+\chapter{Conclusion}
+Projet operationnel avec schema DB etendu (places, avis, itineraires) pour evolution future.
+
+\end{document}
